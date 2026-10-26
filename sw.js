@@ -1,6 +1,6 @@
 // Ratico: guarda todo en el dispositivo para jugar sin internet.
 // Cuando cambies la app, sube el número de VERSION para que los dispositivos descarguen la nueva.
-const VERSION = 'ratico-v1';
+const VERSION = 'ratico-v2';
 const FONTS_CSS = 'https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap';
 const FILES = [
   "./",
@@ -9,7 +9,15 @@ const FILES = [
   "icon-192.png",
   "icon-512.png",
   "maskable-512.png",
-  "apple-180.png"
+  "apple-180.png",
+  "lib/d3-array.min.js",
+  "lib/d3-geo.min.js",
+  "lib/topojson-client.min.js",
+  "data/countries.json",
+  "data/countries-lo.json",
+  "data/cities.json",
+  "data/marine.json",
+  "data/adm1.json"
 ];
 
 self.addEventListener('install', e => {

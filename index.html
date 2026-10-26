@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ratico</title>
-<meta name="description" content="Minijuegos cortos para entrenar reflejos, memoria, atención y cálculo. Funciona sin internet.">
+<meta name="description" content="Minijuegos cortos para entrenar reflejos, memoria, atención, cálculo y geografía. Funciona sin internet.">
 <meta name="theme-color" content="#1d5fd6">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,6 @@
 <link rel="apple-touch-icon" href="apple-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Ratico">
 </head>
 <body>
@@ -52,6 +51,9 @@ img{ max-width: 100%; }
   --sig-go: hsl(146 62% 38%);
   --sig-fg: hsl(0 0% 100%);
   --shadow: 0 1px 2px hsl(var(--h1) 30% 20% / .06), 0 10px 28px -14px hsl(var(--h1) 30% 20% / .22);
+  --sea: hsl(205 62% 87%); --sea-text: hsl(210 55% 34%); --grat: hsl(210 40% 40% / .13);
+  --land-1: hsl(30 72% 80%); --land-2: hsl(96 42% 73%); --land-3: hsl(48 82% 75%); --land-4: hsl(268 42% 83%); --land-5: hsl(350 62% 84%); --land-6: hsl(165 36% 72%);
+  --land-dim: hsl(215 12% 86%); --border: hsl(220 18% 30% / .55); --halo: hsl(0 0% 100% / .88); --adm-text: hsl(220 12% 34%);
 
   --f-display: "Unbounded", "Arial Black", system-ui, sans-serif;
   --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -80,6 +82,9 @@ img{ max-width: 100%; }
     --sig-wait: hsl(356 62% 46%);
     --sig-go: hsl(146 55% 40%);
     --shadow: 0 1px 2px hsl(0 0% 0% / .3), 0 12px 30px -14px hsl(0 0% 0% / .6);
+    --sea: hsl(212 48% 15%); --sea-text: hsl(205 62% 72%); --grat: hsl(210 40% 75% / .1);
+    --land-1: hsl(28 42% 40%); --land-2: hsl(96 28% 36%); --land-3: hsl(46 46% 38%); --land-4: hsl(268 24% 42%); --land-5: hsl(350 34% 42%); --land-6: hsl(165 26% 34%);
+    --land-dim: hsl(215 12% 24%); --border: hsl(220 25% 88% / .38); --halo: hsl(220 30% 8% / .85); --adm-text: hsl(220 18% 78%);
     color-scheme: dark;
   }
 }
@@ -104,6 +109,9 @@ img{ max-width: 100%; }
   --sig-wait: hsl(356 62% 46%);
   --sig-go: hsl(146 55% 40%);
   --shadow: 0 1px 2px hsl(0 0% 0% / .3), 0 12px 30px -14px hsl(0 0% 0% / .6);
+  --sea: hsl(212 48% 15%); --sea-text: hsl(205 62% 72%); --grat: hsl(210 40% 75% / .1);
+  --land-1: hsl(28 42% 40%); --land-2: hsl(96 28% 36%); --land-3: hsl(46 46% 38%); --land-4: hsl(268 24% 42%); --land-5: hsl(350 34% 42%); --land-6: hsl(165 26% 34%);
+  --land-dim: hsl(215 12% 24%); --border: hsl(220 25% 88% / .38); --halo: hsl(220 30% 8% / .85); --adm-text: hsl(220 18% 78%);
   color-scheme: dark;
 }
 :root[data-mode="light"]{ color-scheme: light; }
@@ -147,7 +155,10 @@ button, input{ font: inherit; color: inherit; }
 
 .section-label{ font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 6px 0 12px; }
 .games{ display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
-@media (min-width: 900px){ .games{ grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; } }
+@media (min-width: 900px){ .games{ grid-template-columns: repeat(6, minmax(0,1fr)); gap: 12px; } .games.duo{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.card.wide{ grid-column: span 2; background: linear-gradient(135deg, var(--surface) 40%, var(--sea)); }
+@media (max-width: 899px){ .games.duo .card:last-child{ grid-column: span 2; } }
+.duo-label{ margin-top: 26px; }
 .card{
   position: relative; text-align: left; border: 1px solid var(--line); background: var(--surface);
   border-radius: var(--r); padding: 14px; display: grid; grid-template-rows: auto 1fr auto; gap: 10px;
@@ -398,6 +409,90 @@ button, input{ font: inherit; color: inherit; }
 .tol-own{ display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); font-weight: 600; }
 .tol-own input{ width: 110px; height: 34px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); text-align: center; font-family: var(--f-mono); font-weight: 700; }
 
+/* de a dos */
+.hud.single{ grid-template-columns: 1fr; }
+.pc1{ --pc: var(--tile); } .pc2{ --pc: var(--hi); }
+.turnbar{ display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; padding: 8px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); font-size: 15px; }
+.turnbar b{ font-weight: 700; }
+.turnbar .mark svg{ width: 20px; height: 20px; vertical-align: middle; }
+.dot{ width: 14px; height: 14px; border-radius: 50%; background: var(--pc); display: inline-block; flex: none; }
+.dot.big{ width: .7em; height: .7em; margin-right: .25em; vertical-align: .05em; }
+.stat.pc1 b, .hstat.pc1 b{ color: var(--tile); } .stat.pc2 b, .hstat.pc2 b{ color: var(--hi); }
+.linkbtn{ border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 12.5px; cursor: pointer; padding: 2px 4px; }
+.names{ display: grid; gap: 8px; }
+.name-in{ display: flex; align-items: center; gap: 8px; }
+.name-in i{ width: 12px; height: 12px; border-radius: 50%; background: var(--pc); flex: none; }
+.name-in input{ flex: 1; min-width: 0; height: 36px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 0 10px; font-weight: 600; }
+.res .big.duo{ font-family: var(--f-display); font-size: clamp(26px, 7vw, 40px); letter-spacing: -.02em; }
+.c4-wrap{ position: relative; width: min(100%, 540px); }
+.c4{ display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 4px; padding: 8px; border-radius: 18px; background: var(--accent); touch-action: manipulation; }
+.c4col{ border: 0; padding: 3px; background: transparent; border-radius: 12px; display: grid; gap: 6px; cursor: pointer; }
+.c4col:hover{ background: hsl(0 0% 100% / .14); }
+.c4.locked .c4col{ cursor: default; }
+.c4.locked .c4col:hover{ background: transparent; }
+.c4cell{ aspect-ratio: 1; border-radius: 50%; background: var(--bg); box-shadow: inset 0 3px 0 hsl(0 0% 0% / .18); }
+.c4cell.p1{ background: var(--tile); } .c4cell.p2{ background: var(--hi); }
+.c4cell.p1, .c4cell.p2{ box-shadow: inset 0 -4px 0 hsl(0 0% 0% / .18); }
+.c4cell.drop{ animation: c4drop .34s cubic-bezier(.5,0,.9,.6); }
+@keyframes c4drop{ from{ transform: translateY(calc(var(--fall) * -112%)); } to{ transform: none; } }
+.c4cell.win{ outline: 4px solid var(--surface); outline-offset: -4px; animation: winpulse .8s ease-in-out infinite alternate; }
+@keyframes winpulse{ to{ filter: brightness(1.25); } }
+.t3-wrap{ position: relative; width: min(100%, 420px); }
+.t3{ display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; touch-action: manipulation; }
+.t3cell{ aspect-ratio: 1; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; display: grid; place-items: center; padding: 14%; }
+.t3cell:disabled{ cursor: default; }
+.t3cell svg, .turnbar .mark svg{ width: 100%; height: 100%; fill: none; stroke-width: 6; stroke-linecap: round; }
+.t3cell.p1 svg, .turnbar .mark svg path{ stroke: var(--tile); }
+.t3cell.p2 svg, .turnbar .mark svg circle{ stroke: var(--hi); }
+.t3cell.p1 svg path, .t3cell.p2 svg circle{ animation: draw .28s ease-out; }
+@keyframes draw{ from{ opacity: 0; transform: scale(.6); } }
+.t3cell svg path, .t3cell svg circle{ transform-origin: center; }
+.t3cell.fading{ opacity: .38; }
+.t3cell.win{ background: var(--hi-soft); border-color: transparent; }
+.t3.locked .t3cell{ cursor: default; }
+.cv-wrap.hk{ margin-inline: auto; touch-action: none; background: var(--surface); }
+.maps{ display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; }
+.mapbtn{ border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 6px 4px 5px; display: grid; justify-items: center; gap: 4px; cursor: pointer; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.mapbtn canvas{ width: 36px; height: 60px; border-radius: 4px; }
+.mapbtn[aria-pressed="true"]{ border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+/* globo */
+#g11{ --stage-w: min(100%, 880px); }
+.cv-wrap.geo{ height: min(70vh, 640px, 106vw); min-height: 320px; background: var(--surface-2); touch-action: none; cursor: grab; }
+.cv-wrap.geo:active{ cursor: grabbing; }
+.cv-wrap.geo.free{ height: min(78vh, 720px, 125vw); }
+.geo-prompt{ width: var(--stage-w); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: 14px; background: var(--hi-soft); }
+.geo-prompt .lab{ font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--hi); }
+.geo-prompt b{ font-family: var(--f-display); font-size: clamp(20px, 5.4vw, 28px); line-height: 1.1; color: var(--hi); letter-spacing: -.01em; }
+.geo-prompt .sub{ font-size: 13px; color: var(--muted); }
+.geo-tools{ position: absolute; right: 10px; bottom: 10px; display: grid; gap: 6px; z-index: 2; }
+.geo-tools .icon-btn{ font-size: 20px; font-weight: 600; box-shadow: var(--shadow); }
+.geo-search{ position: absolute; left: 10px; top: 10px; width: min(300px, calc(100% - 20px)); z-index: 3; }
+.geo-search input{ width: 100%; height: 40px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); padding: 0 12px 0 36px; font-weight: 600; box-shadow: var(--shadow); }
+.gs-ico{ position: absolute; left: 11px; top: 11px; width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
+.gs-ico svg{ width: 18px; height: 18px; }
+.gs-res{ margin-top: 4px; display: grid; background: var(--surface); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+.gs-res:empty{ display: none; }
+.gs-res button{ border: 0; background: none; text-align: left; padding: 9px 12px; display: flex; justify-content: space-between; gap: 8px; cursor: pointer; font-weight: 600; }
+.gs-res button + button{ border-top: 1px solid var(--line); }
+.gs-res button:hover{ background: var(--accent-soft); }
+.gs-res small{ color: var(--muted); font-weight: 500; }
+.geo-card{ position: absolute; left: 10px; bottom: 10px; width: min(270px, calc(100% - 76px)); background: var(--surface); border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow); display: grid; gap: 8px; z-index: 2; }
+.gc-head{ display: flex; align-items: center; gap: 8px; }
+.gc-head b{ flex: 1; font-family: var(--f-display); font-size: 17px; }
+.icon-btn.sm{ width: 30px; height: 30px; border-radius: 9px; font-size: 18px; }
+.btn.sm{ padding: 7px 11px; font-size: 13px; justify-self: start; }
+.geo-card dl{ margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 13.5px; }
+.geo-card dt{ color: var(--muted); }
+.geo-card dd{ margin: 0; font-weight: 600; }
+.geo-reveal{ position: absolute; left: 10px; right: 64px; bottom: 10px; background: var(--surface); border-radius: 14px; padding: 10px 12px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; z-index: 2; }
+.geo-reveal > div{ flex: 1; min-width: 0; display: grid; }
+.geo-reveal .lab{ font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.geo-reveal b{ font-size: 18px; }
+.geo-reveal .sub{ font-size: 12.5px; color: var(--danger); }
+.res .miss{ max-width: 46ch; font-size: 13px; color: var(--muted); margin-top: 8px; }
+.res .miss span{ font-weight: 700; color: var(--fg); }
+.sel{ width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); padding: 0 10px; font-weight: 600; }
+
 /* stats */
 .stats{ width: var(--stage-w); display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
 .stat{ padding: 11px 12px; min-width: 0; }
@@ -460,15 +555,17 @@ button, input{ font: inherit; color: inherit; }
     <section id="home">
       <div class="hero">
         <h1 data-i18n-html="heroTitle">Entrena la mente en lo que <em>esperas</em>.</h1>
-        <p data-i18n="heroSub">Minijuegos de menos de un minuto para practicar reflejos, memoria, atención y cálculo. Cada juego se configura a tu gusto.</p>
+        <p data-i18n="heroSub">Minijuegos cortos para practicar reflejos, memoria, atención, cálculo y geografía, y juegos para jugar de a dos. Cada juego se configura a tu gusto.</p>
         <div class="meta">
           <span class="chip" data-i18n="chip1">10 juegos</span>
           <span class="chip" data-i18n="chip2">Partidas cortas</span>
           <span class="chip" data-i18n="chip3">Récords en tu dispositivo</span>
         </div>
       </div>
-      <div class="section-label" data-i18n="gamesLabel">Juegos</div>
+      <div class="section-label" data-i18n="soloLabel">Para jugar solo</div>
       <div class="games" id="games"></div>
+      <div class="section-label duo-label" data-i18n="duoLabel">Para jugar de a dos</div>
+      <div class="games duo" id="gamesDuo"></div>
     </section>
   </main>
 </div>
@@ -492,6 +589,9 @@ button, input{ font: inherit; color: inherit; }
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="lib/d3-array.min.js"></script>
+<script src="lib/d3-geo.min.js"></script>
+<script src="lib/topojson-client.min.js"></script>
 <script>
 (function(){
 "use strict";
@@ -502,8 +602,8 @@ button, input{ font: inherit; color: inherit; }
 const I18N = {
   es: {
     heroTitle: 'Entrena la mente en lo que <em>esperas</em>.',
-    heroSub: 'Minijuegos de menos de un minuto para practicar reflejos, memoria, atención y cálculo. Cada juego se configura a tu gusto.',
-    chip1: '10 juegos', chip2: 'Partidas cortas', chip3: 'Récords en tu dispositivo',
+    heroSub: 'Minijuegos cortos para practicar reflejos, memoria, atención, cálculo y geografía, y juegos para jugar de a dos. Cada juego se configura a tu gusto.',
+    chip1: '14 juegos', chip2: 'Partidas cortas', chip3: 'Récords en tu dispositivo',
     gamesLabel: 'Juegos', play: 'Jugar', record: 'Récord', soon: 'Ronda {n}', soonToast: '{g} llega en la ronda {n}.',
     back: 'Volver', restart: 'Reiniciar', options: 'Opciones', pressPlay: 'Pulsa ▶ para empezar',
     again: 'Otra vez', changeOpts: 'Cambiar opciones', newRecord: 'Nuevo récord',
@@ -625,6 +725,46 @@ const I18N = {
     answerL: 'Resultado', scratch: 'Hoja de cuentas', clear: 'Borrar',
     calcRes: '{t} en total · {p} por ejercicio',
     kbdCalc: 'Teclado: números, <kbd>,</kbd> <kbd>/</kbd> <kbd>^</kbd> <kbd>( )</kbd> · <kbd>P</kbd> π · <kbd>E</kbd> e · <kbd>S</kbd> √ · <kbd>Enter</kbd> confirma',
+
+    // ronda 5
+    soloLabel: 'Para jugar solo', duoLabel: 'Para jugar de a dos',
+    playerN: 'Jugador {n}', cpu: 'Máquina', draws: 'Empates', games2: 'Partidas', sessionScore: 'Marcador de esta sesión.', resetScore: 'Reiniciar marcador',
+    names: 'Nombres', namesNote: 'Se usan en los tres juegos de a dos.', namesCpu: 'Tu nombre en el marcador.',
+    opponent: 'Rival', twoPlayers: '2 jugadores', vsCpu: 'Contra la máquina', cpuLevel: 'Nivel de la máquina',
+    easy: 'Fácil', medium: 'Medio', hard: 'Difícil', impossible: 'Imposible',
+    whoStarts: 'Quién empieza', alternate: 'Alternar', you: 'Tú', yourTurn: 'te toca', thinking: 'está pensando…', wins: 'gana',
+    draw: 'Empate', winsGame: 'Gana la partida', noWinner: 'Nadie gana', rematch: 'Revancha',
+    kbdC4: 'Atajos: <kbd>1</kbd>–<kbd>7</kbd> eligen la columna · <kbd>R</kbd> nueva partida · <kbd>Esc</kbd> menú',
+    kbdT3: 'Atajos: el teclado numérico <kbd>1</kbd>–<kbd>9</kbd> marca la casilla · <kbd>R</kbd> nueva partida · <kbd>Esc</kbd> menú',
+    variant: 'Variante', varClassic: 'Clásica', varVanish: '3 fichas',
+    varClassicNote: 'Gana quien haga tres en línea. Si se llena el tablero, es empate.',
+    varVanishNote: 'Cada jugador tiene solo 3 fichas: al poner la cuarta desaparece la más vieja, que se ve más tenue. No hay empates.',
+    map: 'Mapa', mapNote: 'Todos los mapas son igual de justos: la mitad de arriba es la de abajo girada.', mapRandom: 'Aleatorio',
+    goalsToWin: 'Goles para ganar', toGoals: 'a {n} goles',
+    hkHow: 'Cada uno mueve su mazo con el dedo en su mitad. En PC: ratón o flechas abajo, W A S D arriba.', goalBy: '¡Gol de {n}!',
+    kbdHk: 'Abajo: ratón o flechas · Arriba: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> · <kbd>Esc</kbd> menú',
+    map_clasico: 'Clásico', map_pilar: 'Pilar', map_postes: 'Postes', map_esquinas: 'Esquinas', map_embudo: 'Embudo', map_zigzag: 'Zigzag',
+    map_islas: 'Islas', map_muralla: 'Muralla', map_rombo: 'Rombo', map_pinball: 'Pinball', map_corredor: 'Corredor', map_caos: 'Caos',
+    geoMode: 'Modo', geoCountries: 'Países', geoInside: 'Dentro de un país', geoFree: 'Libre',
+    geoModeNote_countries: 'Te dicen un país y tú lo tocas en el globo.',
+    geoModeNote_inside: 'Eliges un país y buscas sus departamentos, regiones o ciudades.',
+    geoModeNote_free: 'Gira, acércate y explora países, capitales, ciudades, departamentos y mares.',
+    region: 'Región', reg_world: 'Mundo', reg_am: 'América', reg_eu: 'Europa', reg_as: 'Asia', reg_af: 'África', reg_oc: 'Oceanía',
+    all: 'Todos', country: 'País', city: 'Ciudad', lookFor: 'Buscar',
+    in_adm1: 'Divisiones', in_adm1Sub: 'deptos., estados', in_region: 'Regiones', in_cities: 'Ciudades',
+    inNote_adm1: 'Departamentos, estados o provincias, según el país.',
+    inNote_region: 'Grupos más grandes que reúnen varias divisiones.',
+    inNote_cities: 'Las ciudades salen como puntos en el mapa, sin el nombre.',
+    whichCities: 'Qué ciudades', topN: 'Top {n}',
+    loadingMap: 'Cargando el mapa…', loadFail: 'No se pudo cargar el mapa. Revisa la conexión y vuelve a abrir el juego.',
+    geoHowC: 'Gira el globo con el dedo, acércate con dos dedos y toca el país que te pidan.',
+    geoHowI: 'Toca en el mapa lo que te pidan. Si fallas, te muestra dónde estaba.',
+    noItems: 'No hay nada para buscar con estas opciones.', findIt: 'Encuentra', capitalCity: 'Capital del país',
+    itWas: 'Era', youTapped: 'Tocaste {n}', toReview: 'Para repasar:',
+    freeNote: 'Toca un país para ver su capital. Usa el buscador para ir a cualquier país o ciudad.', searchPh: 'Buscar país o ciudad',
+    capital: 'Capital', continent: 'Continente', divisions: 'Divisiones', practiceCountry: 'Practicar este país',
+    ct_af: 'África', ct_as: 'Asia', ct_eu: 'Europa', ct_na: 'América del Norte', ct_sa: 'América del Sur', ct_oc: 'Oceanía', ct_an: 'Antártida', ct_sv: 'Océano',
+    kbdGeo: 'Arrastra para girar · rueda o <kbd>+</kbd> <kbd>−</kbd> para acercar · flechas para mover · <kbd>Esc</kbd> menú',
     // tema
     themeTitle: 'Apariencia', mode: 'Modo', auto: 'Automático', light: 'Claro', dark: 'Oscuro',
     primary: 'Color principal', primaryHint: 'botones y controles', secondary: 'Color secundario', secondaryHint: 'fichas y tableros',
@@ -640,13 +780,17 @@ const I18N = {
       g7:['El diferente','Percepción · Atención'],
       g8:['Puntería','Precisión · Velocidad'],
       g9:['Teclas','Ritmo · Reflejos'],
-      g10:['Cálculo','Cálculo mental']
+      g10:['Cálculo','Cálculo mental'],
+      g11:['Globo terráqueo','Geografía · Países, ciudades y departamentos'],
+      g12:['Cuatro en línea','De a dos o contra la máquina'],
+      g13:['Tres en raya','De a dos o contra la máquina'],
+      g14:['Hockey de mesa','De a dos · 12 mapas']
     }
   },
   en: {
     heroTitle: 'Train your mind while you <em>wait</em>.',
-    heroSub: 'Mini-games under a minute long to practice reflexes, memory, attention and mental math. Every game is configurable.',
-    chip1: '10 games', chip2: 'Quick rounds', chip3: 'Records stay on your device',
+    heroSub: 'Quick mini-games to practice reflexes, memory, attention, math and geography, plus games for two. Every game is configurable.',
+    chip1: '14 games', chip2: 'Quick rounds', chip3: 'Records stay on your device',
     gamesLabel: 'Games', play: 'Play', record: 'Best', soon: 'Round {n}', soonToast: '{g} arrives in round {n}.',
     back: 'Back', restart: 'Restart', options: 'Options', pressPlay: 'Press ▶ to start',
     again: 'Again', changeOpts: 'Change options', newRecord: 'New record',
@@ -762,6 +906,45 @@ const I18N = {
     answerL: 'Result', scratch: 'Scratch sheet', clear: 'Clear',
     calcRes: '{t} total · {p} per problem',
     kbdCalc: 'Keyboard: digits, <kbd>.</kbd> <kbd>/</kbd> <kbd>^</kbd> <kbd>( )</kbd> · <kbd>P</kbd> π · <kbd>E</kbd> e · <kbd>S</kbd> √ · <kbd>Enter</kbd> submits',
+
+    soloLabel: 'Play solo', duoLabel: 'Play together',
+    playerN: 'Player {n}', cpu: 'Computer', draws: 'Draws', games2: 'Games', sessionScore: 'Score for this session.', resetScore: 'Reset score',
+    names: 'Names', namesNote: 'Used in all three two-player games.', namesCpu: 'Your name on the scoreboard.',
+    opponent: 'Opponent', twoPlayers: '2 players', vsCpu: 'Against the computer', cpuLevel: 'Computer level',
+    easy: 'Easy', medium: 'Medium', hard: 'Hard', impossible: 'Impossible',
+    whoStarts: 'Who starts', alternate: 'Alternate', you: 'You', yourTurn: 'your turn', thinking: 'is thinking…', wins: 'wins',
+    draw: 'Draw', winsGame: 'Wins the game', noWinner: 'Nobody wins', rematch: 'Rematch',
+    kbdC4: 'Shortcuts: <kbd>1</kbd>–<kbd>7</kbd> pick a column · <kbd>R</kbd> new game · <kbd>Esc</kbd> menu',
+    kbdT3: 'Shortcuts: number pad <kbd>1</kbd>–<kbd>9</kbd> marks a square · <kbd>R</kbd> new game · <kbd>Esc</kbd> menu',
+    variant: 'Variant', varClassic: 'Classic', varVanish: '3 pieces',
+    varClassicNote: 'Three in a row wins. A full board is a draw.',
+    varVanishNote: 'Each player has only 3 pieces: placing a fourth removes the oldest, shown faded. No draws.',
+    map: 'Map', mapNote: 'Every map is equally fair: the top half is the bottom half rotated.', mapRandom: 'Random',
+    goalsToWin: 'Goals to win', toGoals: 'first to {n}',
+    hkHow: 'Each player moves their mallet with a finger in their half. On PC: mouse or arrows at the bottom, W A S D at the top.', goalBy: 'Goal by {n}!',
+    kbdHk: 'Bottom: mouse or arrows · Top: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> · <kbd>Esc</kbd> menu',
+    map_clasico: 'Classic', map_pilar: 'Pillar', map_postes: 'Posts', map_esquinas: 'Corners', map_embudo: 'Funnel', map_zigzag: 'Zigzag',
+    map_islas: 'Islands', map_muralla: 'Wall', map_rombo: 'Diamond', map_pinball: 'Pinball', map_corredor: 'Corridor', map_caos: 'Chaos',
+    geoMode: 'Mode', geoCountries: 'Countries', geoInside: 'Inside a country', geoFree: 'Explore',
+    geoModeNote_countries: 'You get a country name and tap it on the globe.',
+    geoModeNote_inside: 'Pick a country and find its states, regions or cities.',
+    geoModeNote_free: 'Spin, zoom and explore countries, capitals, cities, states and seas.',
+    region: 'Region', reg_world: 'World', reg_am: 'Americas', reg_eu: 'Europe', reg_as: 'Asia', reg_af: 'Africa', reg_oc: 'Oceania',
+    all: 'All', country: 'Country', city: 'City', lookFor: 'Find',
+    in_adm1: 'Divisions', in_adm1Sub: 'states, provinces', in_region: 'Regions', in_cities: 'Cities',
+    inNote_adm1: 'States, provinces or departments, depending on the country.',
+    inNote_region: 'Larger groups made of several divisions.',
+    inNote_cities: 'Cities show as dots on the map, without names.',
+    whichCities: 'Which cities', topN: 'Top {n}',
+    loadingMap: 'Loading the map…', loadFail: 'The map could not load. Check your connection and reopen the game.',
+    geoHowC: 'Spin the globe with a finger, pinch to zoom and tap the country you are asked for.',
+    geoHowI: 'Tap what you are asked for. If you miss, it shows you where it was.',
+    noItems: 'Nothing to find with these settings.', findIt: 'Find', capitalCity: 'National capital',
+    itWas: 'It was', youTapped: 'You tapped {n}', toReview: 'To review:',
+    freeNote: 'Tap a country to see its capital. Use search to jump to any country or city.', searchPh: 'Search country or city',
+    capital: 'Capital', continent: 'Continent', divisions: 'Divisions', practiceCountry: 'Practice this country',
+    ct_af: 'Africa', ct_as: 'Asia', ct_eu: 'Europe', ct_na: 'North America', ct_sa: 'South America', ct_oc: 'Oceania', ct_an: 'Antarctica', ct_sv: 'Ocean',
+    kbdGeo: 'Drag to spin · wheel or <kbd>+</kbd> <kbd>−</kbd> to zoom · arrows to move · <kbd>Esc</kbd> menu',
     themeTitle: 'Appearance', mode: 'Mode', auto: 'Auto', light: 'Light', dark: 'Dark',
     primary: 'Main color', primaryHint: 'buttons and controls', secondary: 'Secondary color', secondaryHint: 'tiles and boards',
     tertiary: 'Accent color', tertiaryHint: 'records and targets', close: 'Done',
@@ -776,7 +959,11 @@ const I18N = {
       g7:['Odd one out','Perception · Attention'],
       g8:['Aim','Accuracy · Speed'],
       g9:['Tiles','Rhythm · Reflexes'],
-      g10:['Mental math','Calculation']
+      g10:['Mental math','Calculation'],
+      g11:['Globe','Geography · Countries, cities and states'],
+      g12:['Connect four','Two players or vs computer'],
+      g13:['Tic-tac-toe','Two players or vs computer'],
+      g14:['Air hockey','Two players · 12 maps']
     }
   }
 };
@@ -850,6 +1037,7 @@ function applyTheme(){
   if (S.mode === 'auto') r.removeAttribute('data-mode'); else r.setAttribute('data-mode', S.mode);
   refreshPalette();
   if (current && current.draw && current.state !== 'play') current.draw(performance.now());
+  if (current && current.markDirty) current.markDirty();
 }
 function swatchColor(name){
   const c = COLORS[name];
@@ -961,6 +1149,7 @@ function saveRecord(g, value, extra){
 }
 const histVal = h => (h.v !== undefined ? h.v : h.t);
 function renderStats(g){
+  if (g.customStats){ const handled = g.customStats(); if (handled !== false) return; }
   const r = store.rec[g.key()];
   const st = g.q('.stats'), rc = g.q('.recent');
   const avg5 = r ? r.hist.slice(0, 5).reduce((a, h) => a + histVal(h), 0) / Math.min(5, r.hist.length) : null;
@@ -1687,8 +1876,9 @@ document.body.appendChild(probe);
 function cssColor(v){ probe.style.color = 'var(' + v + ')'; return getComputedStyle(probe).color; }
 const PAL = {};
 function refreshPalette(){
-  ['--bg','--surface','--surface-2','--line','--fg','--muted','--accent','--accent-soft','--tile','--tile-fg','--hi','--hi-soft','--danger','--danger-soft']
-    .forEach(k => { PAL[k.slice(2)] = cssColor(k); });
+  ['--bg','--surface','--surface-2','--line','--fg','--muted','--accent','--accent-soft','--tile','--tile-fg','--hi','--hi-soft','--danger','--danger-soft',
+   '--sea','--sea-text','--grat','--land-1','--land-2','--land-3','--land-4','--land-5','--land-6','--land-dim','--border','--halo','--adm-text']
+    .forEach(k => { const v = cssColor(k); PAL[k.slice(2)] = v; PAL[k.slice(2).replace(/-(\w)/g, (m, ch) => ch.toUpperCase())] = v; });
 }
 try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', refreshPalette); }catch(e){}
 try{ new MutationObserver(refreshPalette).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-mode'] }); }catch(e){}
@@ -2877,15 +3067,1386 @@ const G10 = {
 };
 
 /* =========================================================
+   Juegos de a dos: utilidades comunes
+   ========================================================= */
+store.players = Object.assign({ p1: '', p2: '' }, store.players || {});
+const pname = i => ((store.players['p' + i] || '').trim() || t('playerN', { n: i }));
+const DUO_SCORE = {};
+function duoScore(id){ return DUO_SCORE[id] || (DUO_SCORE[id] = { 1: 0, 2: 0, d: 0 }); }
+function duoName(g, i){ return i === 2 && g.vsCpu() ? t('cpu') : pname(i); }
+function duoStats(g){
+  const s = duoScore(g.id);
+  const cell = (cls, label, v) => '<div class="stat ' + cls + '"><span class="lab">' + escapeHTML(label) + '</span><b>' + v + '</b></div>';
+  g.q('.stats').innerHTML = cell('pc1', duoName(g, 1), s[1]) + cell('', t(g.noDraws ? 'games2' : 'draws'), g.noDraws ? s[1] + s[2] : s.d) + cell('pc2', duoName(g, 2), s[2]);
+  g.q('.recent').innerHTML = '<span>' + t('sessionScore') + '</span><button class="linkbtn" type="button" data-act="resetScore">' + t('resetScore') + '</button>';
+}
+function escapeHTML(s){ return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function namesBlock(box, g){
+  const nb = optBlock(box, t('names'), g.vsCpu() ? t('namesCpu') : t('namesNote'));
+  nb.className = 'names';
+  [1, 2].forEach(i => {
+    if (i === 2 && g.vsCpu()) return;
+    const w = document.createElement('label'); w.className = 'name-in pc' + i;
+    w.innerHTML = '<i></i><input type="text" maxlength="14" id="' + g.id + 'name' + i + '" placeholder="' + t('playerN', { n: i }) + '" autocomplete="off">';
+    const inp = w.querySelector('input'); inp.value = store.players['p' + i] || '';
+    inp.addEventListener('input', () => { store.players['p' + i] = inp.value; save(); g.onNames && g.onNames(); duoStats(g); });
+    nb.appendChild(w);
+  });
+}
+function duoModeBlocks(box, g, redo, levels){
+  const o = g.o;
+  seg(optBlock(box, t('opponent')), [{ v:'2p', label:t('twoPlayers') }, { v:'cpu', label:t('vsCpu') }], o.mode, v => { o.mode = v; redo(); });
+  if (o.mode === 'cpu') seg(optBlock(box, t('cpuLevel')), levels.map((k, i) => ({ v:i + 1, label:t(k) })), o.level, v => { o.level = v; redo(); });
+  if (g.firstOpt !== false) seg(optBlock(box, t('whoStarts')), [{ v:'alt', label:t('alternate') }, { v:'1', label:o.mode === 'cpu' ? t('you') : t('playerN', { n: 1 }) }, { v:'2', label:o.mode === 'cpu' ? t('cpu') : t('playerN', { n: 2 }) }], o.first, v => { o.first = v; redo(); });
+}
+function nextStarter(g){
+  const f = g.o.first;
+  if (f === '1') return 1;
+  if (f === '2') return 2;
+  g._alt = g._alt === 1 ? 2 : 1;
+  return g._alt;
+}
+function turnHTML(g, who, extra){
+  return '<span class="dot pc' + who + '"></span><b>' + escapeHTML(duoName(g, who)) + '</b><span>' + (extra || t('yourTurn')) + '</span>';
+}
+
+/* =========================================================
+   Juego 12: cuatro en línea
+   ========================================================= */
+store.g12 = Object.assign({ mode: '2p', level: 2, first: 'alt' }, store.g12 || {});
+const C4C = 7, C4R = 6;
+const C4WIN = (() => {
+  const L = [], id = (c, r) => c * C4R + r;
+  for (let c = 0; c < C4C; c++) for (let r = 0; r < C4R; r++){
+    [[1, 0], [0, 1], [1, 1], [1, -1]].forEach(([dc, dr]) => {
+      const ec = c + dc * 3, er = r + dr * 3;
+      if (ec < 0 || ec >= C4C || er < 0 || er >= C4R) return;
+      L.push([0, 1, 2, 3].map(k => id(c + dc * k, r + dr * k)));
+    });
+  }
+  return L;
+})();
+const C4BY = (() => { const m = Array.from({ length: C4C * C4R }, () => []); C4WIN.forEach((w, i) => w.forEach(x => m[x].push(i))); return m; })();
+function c4WinAt(b, i, p){ return C4BY[i].some(wi => C4WIN[wi].every(x => b[x] === p)); }
+function c4Eval(b, p){
+  const q = 3 - p; let s = 0;
+  for (let r = 0; r < C4R; r++){ const v = b[3 * C4R + r]; if (v === p) s += 3; else if (v === q) s -= 3; }
+  for (const w of C4WIN){
+    let m = 0, o = 0;
+    for (const x of w){ if (b[x] === p) m++; else if (b[x] === q) o++; }
+    if (o === 0){ if (m === 3) s += 6; else if (m === 2) s += 2; }
+    else if (m === 0){ if (o === 3) s -= 7; else if (o === 2) s -= 2; }
+  }
+  return s;
+}
+function c4Best(b0, h0, p, depth){
+  const b = b0.slice(), h = h0.slice(), order = [3, 2, 4, 1, 5, 0, 6];
+  function nm(d, a, be, pl){
+    if (d === 0) return c4Eval(b, pl);
+    let best = -Infinity, any = false;
+    for (const c of order){
+      if (h[c] >= C4R) continue;
+      any = true;
+      const i = c * C4R + h[c]; b[i] = pl; h[c]++;
+      const v = c4WinAt(b, i, pl) ? 100000 + d : -nm(d - 1, -be, -a, 3 - pl);
+      h[c]--; b[i] = 0;
+      if (v > best) best = v;
+      if (best > a) a = best;
+      if (a >= be) break;
+    }
+    return any ? best : 0;
+  }
+  let bestV = -Infinity, cands = [];
+  for (const c of order){
+    if (h[c] >= C4R) continue;
+    const i = c * C4R + h[c]; b[i] = p; h[c]++;
+    const v = c4WinAt(b, i, p) ? 1e6 : -nm(depth - 1, -Infinity, Infinity, 3 - p);
+    h[c]--; b[i] = 0;
+    if (v > bestV){ bestV = v; cands = [c]; } else if (v === bestV) cands.push(c);
+  }
+  return pick(cands);
+}
+const G12 = {
+  id: 'g12', hintKey: 'kbdC4', better: 'high',
+  b: [], h: [], turn: 1, over: true, busy: false, win: null, last: -1, timer: 0, _alt: 2,
+  get o(){ return store.g12; },
+  key(){ return 'g12'; }, fmtVal(v){ return String(v); }, cardText(){ return ''; },
+  vsCpu(){ return this.o.mode === 'cpu'; },
+  customStats(){ duoStats(this); },
+  init(){
+    buildShell(this, '<div class="turnbar"></div>', '<div class="c4-wrap"><div class="c4"></div><div class="overlay result" hidden></div></div>');
+    this.q('.hud').classList.add('single');
+    this.tb = this.q('.turnbar'); this.el = this.q('.c4'); this.ov = this.q('.overlay.result');
+    let h = '';
+    for (let c = 0; c < C4C; c++){
+      h += '<button type="button" class="c4col" data-col="' + c + '" aria-label="' + (c + 1) + '">';
+      for (let r = C4R - 1; r >= 0; r--) h += '<span class="c4cell" data-i="' + (c * C4R + r) + '"></span>';
+      h += '</button>';
+    }
+    this.el.innerHTML = h;
+    this.cells = [...this.el.querySelectorAll('.c4cell')].sort((a, b) => a.dataset.i - b.dataset.i);
+    this.el.addEventListener('click', e => { const c = e.target.closest('[data-col]'); if (c) this.human(+c.dataset.col); });
+    bindActs(this, { again: () => this.reset(), change: () => changeOpts(this), resetScore: () => { DUO_SCORE[this.id] = null; duoStats(this); } });
+  },
+  summaryText(){ return this.vsCpu() ? t('vsCpu') + ' · ' + t(['easy', 'medium', 'hard'][this.o.level - 1]) : t('twoPlayers'); },
+  renderOptions(){
+    const box = this.q('.opts'); box.innerHTML = '';
+    const redo = () => { save(); this.renderOptions(); this.reset(); };
+    duoModeBlocks(box, this, redo, ['easy', 'medium', 'hard']);
+    namesBlock(box, this);
+    setSummary(this, this.summaryText());
+  },
+  onNames(){ this.paintTurn(); },
+  stop(){ clearTimeout(this.timer); this.timer = 0; },
+  reset(){
+    this.stop();
+    this.b = new Array(C4C * C4R).fill(0); this.h = new Array(C4C).fill(0);
+    this.over = false; this.busy = false; this.win = null; this.last = -1;
+    this.turn = nextStarter(this);
+    this.ov.hidden = true;
+    this.paint(); this.paintTurn(); duoStats(this);
+    this.maybeCpu();
+  },
+  refresh(){ this.paintTurn(); if (this.over && this.result) this.showResult(); },
+  paint(){
+    this.cells.forEach((el, i) => {
+      const v = this.b[i];
+      el.className = 'c4cell' + (v ? ' p' + v : '') + (i === this.last ? ' drop' : '') + (this.win && this.win.includes(i) ? ' win' : '');
+      if (i === this.last) el.style.setProperty('--fall', (C4R - (i % C4R)));
+    });
+    this.el.classList.toggle('locked', this.over || this.busy);
+    this.el.dataset.turn = this.turn;
+  },
+  paintTurn(){
+    if (this.over) return;
+    const cpuTurn = this.vsCpu() && this.turn === 2;
+    this.tb.innerHTML = turnHTML(this, this.turn, cpuTurn ? t('thinking') : t('yourTurn'));
+  },
+  human(c){
+    if (this.over || this.busy) return;
+    if (this.vsCpu() && this.turn === 2) return;
+    this.play(c);
+  },
+  play(c){
+    if (this.h[c] >= C4R) return;
+    const i = c * C4R + this.h[c];
+    this.b[i] = this.turn; this.h[c]++; this.last = i;
+    if (c4WinAt(this.b, i, this.turn)){
+      this.win = C4WIN.find(w => w.includes(i) && w.every(x => this.b[x] === this.turn));
+      this.finish(this.turn); this.paint(); return;
+    }
+    if (this.h.every(x => x >= C4R)){ this.finish(0); this.paint(); return; }
+    this.turn = 3 - this.turn;
+    this.paint(); this.paintTurn();
+    this.maybeCpu();
+  },
+  maybeCpu(){
+    if (!this.vsCpu() || this.turn !== 2 || this.over) return;
+    this.busy = true; this.paint(); this.paintTurn();
+    this.timer = setTimeout(() => {
+      const lv = this.o.level;
+      let c;
+      if (lv === 1 && Math.random() < .4){ const free = range(0, C4C - 1).filter(x => this.h[x] < C4R); c = pick(free); }
+      else c = c4Best(this.b, this.h, 2, lv === 1 ? 2 : lv === 2 ? 4 : 7);
+      this.busy = false;
+      this.play(c);
+    }, 420);
+  },
+  finish(w){
+    this.over = true;
+    const s = duoScore(this.id);
+    if (w) s[w]++; else s.d++;
+    this.result = { w };
+    duoStats(this);
+    this.tb.innerHTML = w ? turnHTML(this, w, t('wins')) : '<b>' + t('draw') + '</b>';
+    this.timer = setTimeout(() => this.showResult(), 900);
+  },
+  showResult(){
+    const r = this.result; if (!r) return;
+    const s = duoScore(this.id);
+    const big = r.w ? '<span class="dot pc' + r.w + ' big"></span>' + escapeHTML(duoName(this, r.w)) : t('draw');
+    this.ov.innerHTML = '<div class="res"><div class="big duo">' + big + '</div><div class="sub">' + (r.w ? t('winsGame') : t('noWinner')) + ' · ' + escapeHTML(duoName(this, 1)) + ' ' + s[1] + ' – ' + s[2] + ' ' + escapeHTML(duoName(this, 2)) + '</div>' +
+      '<div class="actions"><button class="btn primary" type="button" data-act="again">' + t('rematch') + '</button><button class="btn" type="button" data-act="change">' + t('changeOpts') + '</button></div></div>';
+    this.ov.hidden = false;
+  },
+  onKey(e){
+    if (/^[1-7]$/.test(e.key) && !this.over){ e.preventDefault(); this.human(+e.key - 1); return true; }
+    return false;
+  }
+};
+
+/* =========================================================
+   Juego 13: tres en raya
+   ========================================================= */
+store.g13 = Object.assign({ mode: '2p', level: 3, first: 'alt', variant: 'classic' }, store.g13 || {});
+const T3L = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function t3Winner(b){ for (const l of T3L) if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return { p: b[l[0]], line: l }; return null; }
+function t3Apply(st, i, p, vanish){
+  const b = st.b.slice(), q = { 1: st.q[1].slice(), 2: st.q[2].slice() };
+  if (vanish && q[p].length >= 3){ b[q[p].shift()] = 0; }
+  b[i] = p; q[p].push(i);
+  return { b, q };
+}
+function t3Best(st, p, vanish){
+  const memo = new Map(), maxD = vanish ? 7 : 9;
+  function mm(s, pl, d){
+    const w = t3Winner(s.b);
+    if (w) return w.p === p ? 100 - d : d - 100;
+    if (d >= maxD) return 0;
+    const free = []; s.b.forEach((v, i) => { if (!v) free.push(i); });
+    if (!free.length) return 0;
+    const k = s.b.join('') + '|' + s.q[1].join('') + '|' + s.q[2].join('') + pl + d;
+    if (memo.has(k)) return memo.get(k);
+    let best = pl === p ? -Infinity : Infinity;
+    for (const i of free){
+      const v = mm(t3Apply(s, i, pl, vanish), 3 - pl, d + 1);
+      if (pl === p ? v > best : v < best) best = v;
+    }
+    memo.set(k, best);
+    return best;
+  }
+  let bestV = -Infinity, cands = [];
+  st.b.forEach((v, i) => {
+    if (v) return;
+    const val = mm(t3Apply(st, i, p, vanish), 3 - p, 1);
+    if (val > bestV){ bestV = val; cands = [i]; } else if (val === bestV) cands.push(i);
+  });
+  return pick(cands);
+}
+const X_SVG = '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 9l22 22M31 9L9 31"/></svg>';
+const O_SVG = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="12.5"/></svg>';
+const G13 = {
+  id: 'g13', hintKey: 'kbdT3', better: 'high',
+  st: null, turn: 1, over: true, busy: false, win: null, timer: 0, _alt: 2,
+  get o(){ return store.g13; },
+  get vanish(){ return this.o.variant === 'vanish'; },
+  key(){ return 'g13'; }, fmtVal(v){ return String(v); }, cardText(){ return ''; },
+  vsCpu(){ return this.o.mode === 'cpu'; },
+  customStats(){ duoStats(this); },
+  init(){
+    buildShell(this, '<div class="turnbar"></div>', '<div class="t3-wrap"><div class="t3"></div><div class="overlay result" hidden></div></div>');
+    this.q('.hud').classList.add('single');
+    this.tb = this.q('.turnbar'); this.el = this.q('.t3'); this.ov = this.q('.overlay.result');
+    this.el.innerHTML = range(0, 8).map(i => '<button type="button" class="t3cell" data-i="' + i + '" aria-label="' + (i + 1) + '"></button>').join('');
+    this.cells = [...this.el.children];
+    this.el.addEventListener('click', e => { const c = e.target.closest('[data-i]'); if (c) this.human(+c.dataset.i); });
+    bindActs(this, { again: () => this.reset(), change: () => changeOpts(this), resetScore: () => { DUO_SCORE[this.id] = null; duoStats(this); } });
+  },
+  summaryText(){ return (this.vsCpu() ? t('vsCpu') + ' · ' + t(['easy', 'medium', 'impossible'][this.o.level - 1]) : t('twoPlayers')) + ' · ' + t(this.vanish ? 'varVanish' : 'varClassic'); },
+  renderOptions(){
+    const o = this.o, box = this.q('.opts'); box.innerHTML = '';
+    const redo = () => { save(); this.renderOptions(); this.reset(); };
+    duoModeBlocks(box, this, redo, ['easy', 'medium', 'impossible']);
+    seg(optBlock(box, t('variant'), t(this.vanish ? 'varVanishNote' : 'varClassicNote')), [{ v:'classic', label:t('varClassic') }, { v:'vanish', label:t('varVanish') }], o.variant, v => { o.variant = v; redo(); });
+    namesBlock(box, this);
+    setSummary(this, this.summaryText());
+  },
+  onNames(){ this.paintTurn(); },
+  stop(){ clearTimeout(this.timer); this.timer = 0; },
+  reset(){
+    this.stop();
+    this.st = { b: new Array(9).fill(0), q: { 1: [], 2: [] } };
+    this.over = false; this.busy = false; this.win = null; this.result = null;
+    this.turn = nextStarter(this);
+    this.ov.hidden = true;
+    this.paint(); this.paintTurn(); duoStats(this);
+    this.maybeCpu();
+  },
+  refresh(){ this.paintTurn(); if (this.over && this.result) this.showResult(); },
+  paint(){
+    const nextGone = this.vanish && !this.over && this.st.q[this.turn].length >= 3 ? this.st.q[this.turn][0] : -1;
+    this.cells.forEach((el, i) => {
+      const v = this.st.b[i];
+      el.className = 't3cell' + (v ? ' p' + v : '') + (this.win && this.win.includes(i) ? ' win' : '') + (i === nextGone ? ' fading' : '');
+      el.innerHTML = v === 1 ? X_SVG : v === 2 ? O_SVG : '';
+      el.disabled = !!v;
+    });
+    this.el.classList.toggle('locked', this.over || this.busy);
+  },
+  paintTurn(){
+    if (this.over) return;
+    const cpuTurn = this.vsCpu() && this.turn === 2;
+    this.tb.innerHTML = turnHTML(this, this.turn, cpuTurn ? t('thinking') : t('yourTurn')) + '<span class="mark">' + (this.turn === 1 ? X_SVG : O_SVG) + '</span>';
+  },
+  human(i){
+    if (this.over || this.busy || (this.vsCpu() && this.turn === 2)) return;
+    this.play(i);
+  },
+  play(i){
+    const st = this.st;
+    const gone = this.vanish && st.q[this.turn].length >= 3 ? st.q[this.turn][0] : -1;
+    if (st.b[i] && i !== gone) return;
+    if (i === gone) return;
+    this.st = t3Apply(st, i, this.turn, this.vanish);
+    const w = t3Winner(this.st.b);
+    if (w){ this.win = w.line; this.finish(w.p); this.paint(); return; }
+    if (!this.vanish && this.st.b.every(Boolean)){ this.finish(0); this.paint(); return; }
+    this.turn = 3 - this.turn;
+    this.paint(); this.paintTurn();
+    this.maybeCpu();
+  },
+  maybeCpu(){
+    if (!this.vsCpu() || this.turn !== 2 || this.over) return;
+    this.busy = true; this.paint(); this.paintTurn();
+    this.timer = setTimeout(() => {
+      const lv = this.o.level, free = range(0, 8).filter(i => !this.st.b[i]);
+      const rnd = lv === 1 ? .6 : lv === 2 ? .22 : 0;
+      const i = Math.random() < rnd ? pick(free) : t3Best(this.st, 2, this.vanish);
+      this.busy = false;
+      this.play(i);
+    }, 380);
+  },
+  finish(w){
+    this.over = true;
+    const s = duoScore(this.id);
+    if (w) s[w]++; else s.d++;
+    this.result = { w };
+    duoStats(this);
+    this.tb.innerHTML = w ? turnHTML(this, w, t('wins')) : '<b>' + t('draw') + '</b>';
+    this.timer = setTimeout(() => this.showResult(), 850);
+  },
+  showResult: G12.showResult,
+  onKey(e){
+    if (/^[1-9]$/.test(e.key) && !this.over){ e.preventDefault(); const map = [6, 7, 8, 3, 4, 5, 0, 1, 2]; this.human(map[+e.key - 1]); return true; }
+    return false;
+  }
+};
+
+/* =========================================================
+   Juego 14: hockey de mesa
+   ========================================================= */
+const HW = 600, HH = 1000, HMID = 500, GX0 = 200, GX1 = 400, RM = 40, RP = 26;
+const hc = (x, y, r) => ({ t: 'c', x, y, r });
+const hs = (x1, y1, x2, y2, w) => ({ t: 's', x1, y1, x2, y2, w: w || 14 });
+function hsym(list){
+  const out = list.slice();
+  list.forEach(o => out.push(o.t === 'c' ? hc(HW - o.x, HH - o.y, o.r) : hs(HW - o.x1, HH - o.y1, HW - o.x2, HH - o.y2, o.w)));
+  return out;
+}
+const HK_MAPS = [
+  { id: 'clasico', obs: [] },
+  { id: 'pilar', obs: [hc(300, 500, 58)] },
+  { id: 'postes', obs: hsym([hc(165, 330, 26), hc(435, 330, 26)]) },
+  { id: 'esquinas', obs: hsym([hs(0, 150, 150, 0, 16), hs(600, 150, 450, 0, 16)]) },
+  { id: 'embudo', obs: hsym([hs(105, 40, 212, 150), hs(495, 40, 388, 150)]) },
+  { id: 'zigzag', obs: hsym([hs(0, 300, 240, 370, 16), hs(600, 430, 400, 470, 16)]) },
+  { id: 'islas', obs: hsym([hc(190, 320, 48), hc(445, 405, 26), hc(105, 520, 20)]) },
+  { id: 'muralla', obs: [hs(0, 500, 140, 500, 16), hs(240, 500, 360, 500, 16), hs(460, 500, 600, 500, 16)] },
+  { id: 'rombo', obs: [hs(300, 415, 385, 500), hs(385, 500, 300, 585), hs(300, 585, 215, 500), hs(215, 500, 300, 415)] },
+  { id: 'pinball', obs: hsym([hc(80, 250, 30), hc(520, 320, 22), hc(300, 330, 16), hc(160, 450, 18)]) },
+  { id: 'corredor', obs: hsym([hs(0, 320, 115, 415, 16), hs(115, 415, 0, 510, 16)]) },
+  { id: 'caos', obs: hsym([hc(235, 255, 34), hs(385, 330, 520, 385, 14), hc(115, 440, 22), hs(330, 445, 420, 425, 12)]) }
+];
+const HK_POSTS = [hc(GX0, 0, 5), hc(GX1, 0, 5), hc(GX0, HH, 5), hc(GX1, HH, 5)];
+function hkPush(p, R, o){
+  let cx, cy, rr;
+  if (o.t === 'c'){ cx = o.x; cy = o.y; rr = o.r; }
+  else {
+    const dx = o.x2 - o.x1, dy = o.y2 - o.y1, L2 = dx * dx + dy * dy;
+    const tt = L2 ? clamp(((p.x - o.x1) * dx + (p.y - o.y1) * dy) / L2, 0, 1) : 0;
+    cx = o.x1 + dx * tt; cy = o.y1 + dy * tt; rr = o.w / 2;
+  }
+  let nx = p.x - cx, ny = p.y - cy, d = Math.hypot(nx, ny);
+  const min = R + rr;
+  if (d >= min) return null;
+  if (d < 1e-6){ nx = 0; ny = 1; d = 1e-6; }
+  nx /= d; ny /= d;
+  p.x = cx + nx * min; p.y = cy + ny * min;
+  return [nx, ny];
+}
+function hkFree(obs, x, y, R){ return obs.every(o => { const p = { x, y }; return !hkPush(p, R + 4, o); }); }
+store.g14 = Object.assign({ mode: '2p', level: 2, first: 'alt', map: 'random', goals: 5 }, store.g14 || {});
+const G14 = {
+  id: 'g14', hintKey: 'kbdHk', better: 'high', noDraws: true, firstOpt: false,
+  state: 'idle', map: null, puck: null, m: null, score: null, raf: 0, lastT: 0, acc: 0, slow: 0, msg: '', msgT: 0, keys: {}, ptr: new Map(), mouseP: null,
+  get o(){ return store.g14; },
+  key(){ return 'g14'; }, fmtVal(v){ return String(v); }, cardText(){ return ''; },
+  vsCpu(){ return this.o.mode === 'cpu'; },
+  customStats(){ duoStats(this); },
+  init(){
+    buildShell(this, '<div class="hstat pc1"><span class="lab hk1l"></span><b data-h="hk1">0</b></div>' + hstat('map', 'hkmap') + '<div class="hstat pc2"><span class="lab hk2l"></span><b data-h="hk2">0</b></div>',
+      '<div class="cv-wrap hk"><canvas></canvas><div class="overlay start"></div><div class="overlay result" hidden></div></div>');
+    this.wrap = this.q('.cv-wrap'); this.cv = this.q('canvas');
+    this.ovS = this.q('.overlay.start'); this.ovR = this.q('.overlay.result');
+    const toField = e => { const r = this.cv.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * HW, y: (e.clientY - r.top) / r.height * HH }; };
+    this.cv.addEventListener('pointerdown', e => {
+      if (this.state !== 'play' && this.state !== 'goal') return;
+      e.preventDefault();
+      const f = toField(e);
+      const who = this.vsCpu() ? 1 : (f.y >= HMID ? 1 : 2);
+      try{ this.cv.setPointerCapture(e.pointerId); }catch(err){}
+      this.ptr.set(e.pointerId, who);
+      this.m[who].tx = f.x; this.m[who].ty = f.y; this.m[who].touch = true;
+    });
+    this.cv.addEventListener('pointermove', e => {
+      const f = toField(e);
+      if (this.ptr.has(e.pointerId)){ const who = this.ptr.get(e.pointerId); this.m[who].tx = f.x; this.m[who].ty = f.y; return; }
+      if (e.pointerType === 'mouse' && this.m && (this.state === 'play' || this.state === 'goal')){ this.m[1].tx = f.x; this.m[1].ty = f.y; this.m[1].touch = true; }
+    });
+    const up = e => { this.ptr.delete(e.pointerId); };
+    this.cv.addEventListener('pointerup', up); this.cv.addEventListener('pointercancel', up);
+    document.addEventListener('keyup', e => { this.keys[e.key.toLowerCase()] = false; });
+    window.addEventListener('blur', () => { this.keys = {}; });
+    bindActs(this, { play: () => this.start(), again: () => this.start(), change: () => changeOpts(this), resetScore: () => { DUO_SCORE[this.id] = null; duoStats(this); } });
+  },
+  mapName(id){ return t('map_' + id); },
+  summaryText(){ const o = this.o; return (this.vsCpu() ? t('vsCpu') : t('twoPlayers')) + ' · ' + (o.map === 'random' ? t('mapRandom') : this.mapName(o.map)) + ' · ' + t('toGoals', { n: o.goals }); },
+  renderOptions(){
+    const o = this.o, box = this.q('.opts'); box.innerHTML = '';
+    const redo = () => { save(); this.renderOptions(); this.reset(); };
+    duoModeBlocks(box, this, redo, ['easy', 'medium', 'hard']);
+    seg(optBlock(box, t('goalsToWin')), [3, 5, 7, 10].map(n => ({ v:n, label:String(n) })), o.goals, v => { o.goals = v; redo(); });
+    const mb = optBlock(box, t('map'), t('mapNote'));
+    mb.className = 'maps';
+    [{ id: 'random' }].concat(HK_MAPS).forEach(mp => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'mapbtn';
+      b.setAttribute('aria-pressed', String(o.map === mp.id));
+      b.innerHTML = '<canvas width="60" height="100"></canvas><span>' + (mp.id === 'random' ? t('mapRandom') : this.mapName(mp.id)) + '</span>';
+      b.addEventListener('click', () => { o.map = mp.id; redo(); });
+      mb.appendChild(b);
+      this.thumb(b.querySelector('canvas'), mp);
+    });
+    namesBlock(box, this);
+    setSummary(this, this.summaryText());
+  },
+  thumb(cv, mp){
+    refreshPalette();
+    const c = cv.getContext('2d'), s = 60 / HW;
+    c.fillStyle = PAL['surface-2']; c.fillRect(0, 0, 60, 100);
+    c.strokeStyle = PAL.line; c.lineWidth = 1; c.beginPath(); c.moveTo(0, 50); c.lineTo(60, 50); c.stroke();
+    c.fillStyle = PAL.tile; c.fillRect(GX0 * s, 0, (GX1 - GX0) * s, 3); c.fillRect(GX0 * s, 97, (GX1 - GX0) * s, 3);
+    if (mp.id === 'random'){
+      c.fillStyle = PAL.muted; c.font = '700 26px ' + getComputedStyle(document.body).fontFamily; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', 30, 52);
+      return;
+    }
+    c.fillStyle = PAL.accent;
+    mp.obs.forEach(o => this.drawObs(c, o, s));
+  },
+  drawObs(c, o, s){
+    if (o.t === 'c'){ c.beginPath(); c.arc(o.x * s, o.y * s, o.r * s, 0, Math.PI * 2); c.fill(); }
+    else {
+      c.save(); c.lineCap = 'round'; c.lineWidth = Math.max(1.5, o.w * s); c.strokeStyle = c.fillStyle;
+      c.beginPath(); c.moveTo(o.x1 * s, o.y1 * s); c.lineTo(o.x2 * s, o.y2 * s); c.stroke(); c.restore();
+    }
+  },
+  onNames(){ this.updateHud(); this.draw(); },
+  updateHud(){
+    setHud(this, 'hk1', this.score ? String(this.score[1]) : '0');
+    setHud(this, 'hk2', this.score ? String(this.score[2]) : '0');
+    setHud(this, 'hkmap', this.map ? this.mapName(this.map.id) : (this.o.map === 'random' ? t('mapRandom') : this.mapName(this.o.map)));
+    this.q('.hk1l').textContent = duoName(this, 1); this.q('.hk2l').textContent = duoName(this, 2);
+  },
+  sizeWrap(){
+    const avail = clamp(window.innerHeight - 300, 360, 780);
+    this.wrap.style.width = 'min(100%, ' + Math.round(avail * HW / HH) + 'px)';
+    this.wrap.style.aspectRatio = HW + ' / ' + HH;
+  },
+  pickMap(){
+    const id = this.o.map === 'random' ? pick(HK_MAPS.filter(m => !this.map || m.id !== this.map.id || HK_MAPS.length < 2)).id : this.o.map;
+    this.map = HK_MAPS.find(m => m.id === id) || HK_MAPS[0];
+  },
+  freeSpot(x, y, R){
+    for (let k = 0; k < 40; k++){
+      const dx = (k % 2 ? 1 : -1) * Math.ceil(k / 2) * 14, dy = Math.floor(k / 10) * 18 * (y < HMID ? 1 : -1);
+      if (hkFree(this.map.obs, x + dx, y + dy, R)) return { x: x + dx, y: y + dy };
+    }
+    return { x, y };
+  },
+  servePuck(side){
+    const s = this.freeSpot(HW / 2, side === 1 ? HH * .7 : HH * .3, RP);
+    this.puck = { x: s.x, y: s.y, vx: 0, vy: 0 };
+    this.slow = 0;
+  },
+  placeMallets(){
+    const a = this.freeSpot(HW / 2, HH - 110, RM), b = this.freeSpot(HW / 2, 110, RM);
+    this.m = {
+      1: { x: a.x, y: a.y, tx: a.x, ty: a.y, vx: 0, vy: 0, touch: false },
+      2: { x: b.x, y: b.y, tx: b.x, ty: b.y, vx: 0, vy: 0, touch: false }
+    };
+  },
+  reset(){
+    this.stop();
+    this.sizeWrap();
+    this.state = 'idle'; this.score = { 1: 0, 2: 0 }; this.map = null;
+    if (this.o.map !== 'random') this.pickMap();
+    else this.map = { id: 'clasico', obs: [] };
+    this.placeMallets(); this.servePuck(Math.random() < .5 ? 1 : 2);
+    this.ovS.hidden = false; this.ovS.innerHTML = startBlock(t('hkHow'));
+    this.ovR.hidden = true;
+    if (this.o.map === 'random') this.map = null;
+    refreshPalette();
+    this.updateHud(); duoStats(this);
+    requestAnimationFrame(() => this.draw());
+  },
+  refresh(){
+    if (this.state === 'idle') this.ovS.innerHTML = startBlock(t('hkHow'));
+    if (this.state === 'done') this.showResult();
+    this.updateHud(); this.draw();
+  },
+  stop(){ cancelAnimationFrame(this.raf); this.raf = 0; },
+  start(){
+    collapseOnPhone(this);
+    refreshPalette();
+    this.sizeWrap();
+    this.pickMap();
+    this.score = { 1: 0, 2: 0 };
+    this.placeMallets(); this.servePuck(Math.random() < .5 ? 1 : 2);
+    this.ovS.hidden = true; this.ovR.hidden = true;
+    this.state = 'play'; this.msg = ''; this.ptr.clear();
+    const rb = this.wrap.getBoundingClientRect();
+    if (rb.bottom > window.innerHeight || rb.top < 0) this.wrap.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    this.updateHud();
+    this.stop();
+    this.lastT = performance.now(); this.acc = 0;
+    const loop = ts => { this.frame(ts); if (this.state === 'play' || this.state === 'goal') this.raf = requestAnimationFrame(loop); };
+    this.raf = requestAnimationFrame(loop);
+  },
+  frame(ts){
+    const dt = Math.min(.05, Math.max(0, (ts - this.lastT) / 1000)); this.lastT = ts;
+    this.keyInput(dt);
+    if (this.vsCpu()) this.cpu(dt);
+    const H = 1 / 240;
+    this.acc += dt;
+    let n = 0;
+    while (this.acc >= H && n < 20){ this.step(H); this.acc -= H; n++; if (this.state !== 'play' && this.state !== 'goal') break; }
+    if (this.state === 'goal' && performance.now() > this.msgT){ this.state = 'play'; this.msg = ''; }
+    this.draw();
+  },
+  keyInput(dt){
+    const K = this.keys, sp = 950;
+    const move = (m, l, r, u, d) => {
+      const dx = (K[r] ? 1 : 0) - (K[l] ? 1 : 0), dy = (K[d] ? 1 : 0) - (K[u] ? 1 : 0);
+      if (!dx && !dy) return;
+      const L = Math.hypot(dx, dy);
+      m.tx = m.x + dx / L * sp * dt * 3; m.ty = m.y + dy / L * sp * dt * 3; m.touch = true;
+    };
+    move(this.m[1], 'arrowleft', 'arrowright', 'arrowup', 'arrowdown');
+    if (!this.vsCpu()) move(this.m[2], 'a', 'd', 'w', 's');
+    else move(this.m[1], 'a', 'd', 'w', 's');
+  },
+  cpu(dt){
+    const m = this.m[2], p = this.puck, lv = this.o.level;
+    const goal = { x: HW / 2, y: HH + 60 };
+    let tx, ty;
+    if (p.y < HMID + 10){
+      const dx = goal.x - p.x, dy = goal.y - p.y, L = Math.hypot(dx, dy) || 1;
+      const ux = dx / L, uy = dy / L;
+      const bx = p.x - ux * (RM + RP + 6), by = p.y - uy * (RM + RP + 6);
+      const behind = m.y < p.y - 6;
+      if (behind && Math.hypot(m.x - bx, m.y - by) < 30){ tx = p.x + ux * 60; ty = p.y + uy * 60; }
+      else if (behind){ tx = bx; ty = by; }
+      else { tx = p.x + (p.x < m.x ? 1 : -1) * (RM + RP + 10); ty = Math.max(RM, p.y - RM - RP - 10); }
+    } else {
+      const lead = p.vy < 0 ? clamp(p.x + p.vx * ((p.y - 130) / Math.max(200, -p.vy)) * .5, GX0, GX1) : HW / 2 + (p.x - HW / 2) * .35;
+      tx = lead; ty = 115;
+    }
+    const sp = [480, 820, 1250][lv - 1];
+    const dx = tx - m.x, dy = ty - m.y, L = Math.hypot(dx, dy);
+    const stp = Math.min(L, sp * dt * 2.2);
+    if (L > 0.5){ m.tx = m.x + dx / L * stp * 1.4; m.ty = m.y + dy / L * stp * 1.4; }
+    else { m.tx = m.x; m.ty = m.y; }
+  },
+  stepMallet(m, who, h){
+    const maxV = 4200;
+    let dx = m.tx - m.x, dy = m.ty - m.y;
+    const L = Math.hypot(dx, dy), lim = maxV * h;
+    if (L > lim){ dx = dx / L * lim; dy = dy / L * lim; }
+    const ox = m.x, oy = m.y;
+    m.x += dx; m.y += dy;
+    m.x = clamp(m.x, RM, HW - RM);
+    m.y = who === 1 ? clamp(m.y, HMID + RM, HH - RM) : clamp(m.y, RM, HMID - RM);
+    for (const o of this.map.obs) hkPush(m, RM, o);
+    m.x = clamp(m.x, RM, HW - RM);
+    m.y = who === 1 ? clamp(m.y, HMID + RM, HH - RM) : clamp(m.y, RM, HMID - RM);
+    m.vx = (m.x - ox) / h; m.vy = (m.y - oy) / h;
+  },
+  bounce(p, n, e){
+    const vn = p.vx * n[0] + p.vy * n[1];
+    if (vn < 0){ p.vx -= (1 + e) * vn * n[0]; p.vy -= (1 + e) * vn * n[1]; }
+  },
+  step(h){
+    this.stepMallet(this.m[1], 1, h); this.stepMallet(this.m[2], 2, h);
+    const p = this.puck;
+    if (this.state === 'goal') return;
+    p.x += p.vx * h; p.y += p.vy * h;
+    const fr = Math.pow(.82, h); p.vx *= fr; p.vy *= fr;
+    if (p.x < RP){ p.x = RP; if (p.vx < 0) p.vx = -p.vx * .9; }
+    if (p.x > HW - RP){ p.x = HW - RP; if (p.vx > 0) p.vx = -p.vx * .9; }
+    const inMouth = p.x > GX0 && p.x < GX1;
+    if (!inMouth){
+      if (p.y < RP){ p.y = RP; if (p.vy < 0) p.vy = -p.vy * .9; }
+      if (p.y > HH - RP){ p.y = HH - RP; if (p.vy > 0) p.vy = -p.vy * .9; }
+    }
+    for (const o of HK_POSTS){ const n = hkPush(p, RP, o); if (n) this.bounce(p, n, .85); }
+    for (const o of this.map.obs){ const n = hkPush(p, RP, o); if (n) this.bounce(p, n, .9); }
+    [1, 2].forEach(k => {
+      const m = this.m[k];
+      let nx = p.x - m.x, ny = p.y - m.y, d = Math.hypot(nx, ny);
+      if (d >= RM + RP) return;
+      if (d < 1e-6){ nx = 0; ny = k === 1 ? -1 : 1; d = 1e-6; }
+      nx /= d; ny /= d;
+      p.x = m.x + nx * (RM + RP); p.y = m.y + ny * (RM + RP);
+      const rvx = p.vx - m.vx, rvy = p.vy - m.vy, vn = rvx * nx + rvy * ny;
+      if (vn < 0){ p.vx -= 1.9 * vn * nx; p.vy -= 1.9 * vn * ny; }
+    });
+    const sp = Math.hypot(p.vx, p.vy), MAX = 2900;
+    if (sp > MAX){ p.vx *= MAX / sp; p.vy *= MAX / sp; }
+    if (sp < 22) this.slow += h; else this.slow = 0;
+    if (this.slow > 6){ this.servePuck(p.y < HMID ? 2 : 1); }
+    if (p.y < -RP) this.goal(1);
+    else if (p.y > HH + RP) this.goal(2);
+  },
+  goal(who){
+    this.score[who]++;
+    this.updateHud();
+    if (this.score[who] >= this.o.goals){ this.finish(who); return; }
+    this.msg = t('goalBy', { n: duoName(this, who) }); this.msgWho = who;
+    this.state = 'goal'; this.msgT = performance.now() + 1100;
+    this.servePuck(3 - who);
+  },
+  finish(w){
+    this.stop();
+    this.state = 'done';
+    duoScore(this.id)[w]++;
+    this.result = { w };
+    duoStats(this);
+    this.draw();
+    this.showResult();
+  },
+  showResult(){
+    const r = this.result; if (!r) return;
+    const sc = this.score;
+    this.ovR.innerHTML = '<div class="res"><div class="big duo"><span class="dot pc' + r.w + ' big"></span>' + escapeHTML(duoName(this, r.w)) + '</div>' +
+      '<div class="sub">' + t('winsGame') + ' · ' + sc[1] + ' – ' + sc[2] + ' · ' + this.mapName(this.map.id) + '</div>' +
+      '<div class="actions"><button class="btn primary" type="button" data-act="again">' + t('rematch') + '</button><button class="btn" type="button" data-act="change">' + t('changeOpts') + '</button></div></div>';
+    this.ovR.hidden = false;
+  },
+  draw(){
+    if (this.sec.hidden || !this.m) return;
+    const { ctx: c, w } = fitCanvas(this.cv), s = w / HW;
+    c.clearRect(0, 0, HW * s, HH * s);
+    c.save(); c.scale(s, s);
+    c.fillStyle = PAL.surface; c.fillRect(0, 0, HW, HH);
+    c.strokeStyle = PAL.line; c.lineWidth = 3;
+    c.setLineDash([14, 12]); c.beginPath(); c.moveTo(0, HMID); c.lineTo(HW, HMID); c.stroke(); c.setLineDash([]);
+    c.beginPath(); c.arc(HW / 2, HMID, 70, 0, Math.PI * 2); c.stroke();
+    c.beginPath(); c.arc(HW / 2, 0, 130, 0, Math.PI); c.stroke();
+    c.beginPath(); c.arc(HW / 2, HH, 130, Math.PI, Math.PI * 2); c.stroke();
+    c.fillStyle = PAL.hi; c.fillRect(GX0, 0, GX1 - GX0, 9);
+    c.fillStyle = PAL.tile; c.fillRect(GX0, HH - 9, GX1 - GX0, 9);
+    if (this.map){
+      c.fillStyle = PAL.accent;
+      this.map.obs.forEach(o => this.drawObs(c, o, 1));
+    }
+    const disc = (x, y, r, col, ring) => {
+      c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fillStyle = col; c.fill();
+      if (ring){ c.beginPath(); c.arc(x, y, r * .45, 0, Math.PI * 2); c.fillStyle = 'rgba(255,255,255,.35)'; c.fill(); }
+    };
+    disc(this.m[1].x, this.m[1].y, RM, PAL.tile, true);
+    disc(this.m[2].x, this.m[2].y, RM, PAL.hi, true);
+    if (this.puck) disc(this.puck.x, this.puck.y, RP, PAL.fg, false);
+    c.font = '700 54px ' + getComputedStyle(document.body).getPropertyValue('--f-mono');
+    c.textAlign = 'left'; c.textBaseline = 'middle'; c.globalAlpha = .22;
+    if (this.score){
+      c.fillStyle = PAL.tile; c.fillText(String(this.score[1]), 18, HMID + 48);
+      c.save(); c.translate(HW - 18, HMID - 48); c.rotate(Math.PI); c.fillStyle = PAL.hi; c.fillText(String(this.score[2]), 0, 0); c.restore();
+    }
+    c.globalAlpha = 1;
+    if (this.state === 'goal' && this.msg){
+      c.font = '700 40px ' + getComputedStyle(document.body).getPropertyValue('--f-display');
+      c.textAlign = 'center'; c.fillStyle = this.msgWho === 1 ? PAL.tile : PAL.hi;
+      c.fillText(this.msg, HW / 2, HMID + 120);
+      if (!this.vsCpu()){ c.save(); c.translate(HW / 2, HMID - 120); c.rotate(Math.PI); c.fillText(this.msg, 0, 0); c.restore(); }
+    }
+    c.restore();
+  },
+  onKey(e){
+    const k = e.key.toLowerCase();
+    if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown', 'w', 'a', 's', 'd'].includes(k) && (this.state === 'play' || this.state === 'goal')){
+      e.preventDefault(); this.keys[k] = true; return true;
+    }
+    if (k === 'r' && this.state === 'play') return true;
+    return false;
+  }
+};
+
+/* =========================================================
+   Juego 11: globo terráqueo
+   ========================================================= */
+const GEO = { ready: null, adm1P: null, adm1: null };
+const DEG = 180 / Math.PI;
+function geoLoad(){
+  if (!GEO.ready) GEO.ready = Promise.all([
+    fetch('data/countries.json').then(r => r.json()),
+    fetch('data/cities.json').then(r => r.json()),
+    fetch('data/marine.json').then(r => r.json()),
+    fetch('data/countries-lo.json').then(r => r.json())
+  ]).then(([topo, cities, marine, lo]) => {
+    GEO.lo = new Map(topojson.feature(lo, lo.objects.countries).features.map(f => [f.id || (f.properties && f.properties.id), f]));
+    GEO.bordersLo = topojson.mesh(lo, lo.objects.countries, (a, b) => a !== b);
+    const geoms = topo.objects.countries.geometries;
+    const feats = topojson.feature(topo, topo.objects.countries).features;
+    const nb = topojson.neighbors(geoms);
+    feats.forEach((f, i) => {
+      const p = f.properties;
+      f.id = p.id; f.cen = [p.lx, p.ly]; f.area = d3.geoArea(f);
+      f.rad = geoRadius(f, f.cen);
+      const used = new Set(nb[i].map(j => feats[j].ci).filter(x => x !== undefined));
+      f.ci = [0, 1, 2, 3, 4, 5].find(c => !used.has(c)) ?? (i % 6);
+    });
+    GEO.topo = topo; GEO.feats = feats;
+    GEO.byId = new Map(feats.map(f => [f.id, f]));
+    GEO.borders = topojson.mesh(topo, topo.objects.countries, (a, b) => a !== b);
+    GEO.cities = cities.map(r => ({ c: r[0], es: r[1], en: r[2], lon: r[3], lat: r[4], pop: r[5], k: r[6], a1: r[7] }));
+    GEO.cityBy = new Map();
+    GEO.cities.forEach(ci => { if (!GEO.cityBy.has(ci.c)) GEO.cityBy.set(ci.c, []); GEO.cityBy.get(ci.c).push(ci); });
+    GEO.marine = marine.map(r => ({ es: r[0], en: r[1], cla: r[2], rank: r[3], lon: r[4], lat: r[5] }));
+    return GEO;
+  });
+  return GEO.ready;
+}
+function adm1Load(){
+  if (!GEO.adm1P) GEO.adm1P = fetch('data/adm1.json').then(r => r.json()).then(topo => {
+    const feats = topojson.feature(topo, topo.objects.adm1).features;
+    const by = new Map();
+    feats.forEach((f, i) => {
+      f.idx = i;
+      const p = f.properties;
+      try{ f.cen = d3.geoCentroid(f); }catch(e){ f.cen = [0, 0]; }
+      f.area = d3.geoArea(f);
+      if (f.area > 2 * Math.PI){ f.area = 4 * Math.PI - f.area; }
+      f.rad = geoRadius(f, f.cen);
+      if (!by.has(p.c)) by.set(p.c, []);
+      by.get(p.c).push(f);
+    });
+    GEO.adm1 = { topo, feats, by, meshBy: new Map(), mesh(code){
+      if (!this.meshBy.has(code)) this.meshBy.set(code, topojson.mesh(topo, { type: 'GeometryCollection', geometries: (by.get(code) || []).map(f => topo.objects.adm1.geometries[f.idx]) }, (a, b) => a !== b));
+      return this.meshBy.get(code);
+    } };
+    return GEO.adm1;
+  });
+  return GEO.adm1P;
+}
+function geoRadius(f, cen){
+  let m = 0;
+  const visit = cs => { for (let i = 0; i < cs.length; i += 3){ const d = d3.geoDistance(cen, cs[i]); if (d > m) m = d; } };
+  const g = f.geometry;
+  if (!g) return 0;
+  if (g.type === 'Polygon') g.coordinates.forEach(visit);
+  else if (g.type === 'MultiPolygon') g.coordinates.forEach(p => p.forEach(visit));
+  return m;
+}
+const geoName = o => (S.lang === 'es' ? o.es : o.en) || o.en || o.es;
+const ADM_TYPES = { State: 'Estado', Province: 'Provincia', Department: 'Departamento', Region: 'Región', Municipality: 'Municipio', County: 'Condado', District: 'Distrito', Governorate: 'Gobernación', Prefecture: 'Prefectura', 'Autonomous Community': 'Comunidad autónoma', 'Federal District': 'Distrito federal', 'Capital District': 'Distrito capital', Territory: 'Territorio', Canton: 'Cantón', Oblast: 'Óblast', Republic: 'República', Emirate: 'Emirato', Parish: 'Parroquia', Division: 'División', Commune: 'Comuna', 'Autonomous Region': 'Región autónoma', 'Capital City': 'Ciudad capital', Capital: 'Capital', 'Metropolitan department': 'Departamento', 'Overseas department': 'Departamento de ultramar', 'Union territory': 'Territorio de la unión', Krai: 'Krai', 'Autonomous Okrug': 'Distrito autónomo', 'Federal City': 'Ciudad federal', Municipalities: 'Municipio', 'Special Municipality': 'Municipio especial', City: 'Ciudad', Island: 'Isla', Dependency: 'Dependencia', Voivodeship: 'Voivodato', Län: 'Provincia', Regions: 'Región', Departments: 'Departamento', Provinces: 'Provincia', States: 'Estado' };
+const admType = p => S.lang === 'es' ? (ADM_TYPES[p.te] || p.te || p.t) : (p.te || p.t);
+const REGION_VIEW = { world: [-45, 12], am: [-75, 5], eu: [15, 50], as: [92, 28], af: [20, 2], oc: [145, -22] };
+const REGION_CT = { world: null, am: ['na', 'sa'], eu: ['eu'], as: ['as'], af: ['af'], oc: ['oc'] };
+const PIN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>';
+
+store.g11 = Object.assign({ mode: 'countries', region: 'world', rounds: 15, country: 'COL', inType: 'adm1', cityCount: 25, inRounds: 15 }, store.g11 || {});
+const G11 = {
+  id: 'g11', hintKey: 'kbdGeo', better: 'high',
+  state: 'idle', view: { lon: -45, lat: 12, k: 1 }, raf: 0, dirty: false, anim: null, vel: null,
+  pool: [], i: 0, hits: 0, t0: 0, tick: 0, flags: new Map(), sel: null, revealT: null, lastResult: null, loaded: false,
+  get o(){ return store.g11; },
+  key(){
+    const o = this.o;
+    if (o.mode === 'countries') return 'g11|c|' + o.region + '|' + o.rounds;
+    if (o.mode === 'inside') return 'g11|i|' + o.country + '|' + o.inType + '|' + (o.inType === 'cities' ? o.cityCount : '') + '|' + o.inRounds;
+    return 'g11|free';
+  },
+  enc(h, sec){ return h * 1e5 + (99999 - Math.min(99999, Math.round(sec * 10))); },
+  fmtVal(v){ return Math.floor(v / 1e5) + ' ✓'; },
+  avg5(r){ const h = r.hist.slice(0, 5); return numMax(h.reduce((a, x) => a + Math.floor(histVal(x) / 1e5), 0) / h.length, 1); },
+  cardText(r){ return Math.floor(r.best / 1e5) + ' ' + t('hitsUnit'); },
+  customStats(){ if (this.o.mode === 'free'){ this.q('.stats').innerHTML = ''; this.q('.recent').innerHTML = '<span>' + t('freeNote') + '</span>'; return true; } return false; },
+  init(){
+    buildShell(this, hstat('round', 'rnd') + hstat('hits', 'hit') + hstat('time', 'tim'),
+      '<div class="geo-prompt" hidden></div>' +
+      '<div class="cv-wrap geo"><canvas></canvas>' +
+        '<div class="geo-tools"><button class="icon-btn" type="button" data-act="zin" aria-label="+">+</button><button class="icon-btn" type="button" data-act="zout" aria-label="−">−</button><button class="icon-btn" type="button" data-act="home" aria-label="⟲">' + RESTART_SVG + '</button></div>' +
+        '<div class="geo-search" hidden><span class="gs-ico">' + PIN_SVG + '</span><input type="search" id="g11search" autocomplete="off"><div class="gs-res"></div></div>' +
+        '<div class="geo-card" hidden></div>' +
+        '<div class="geo-reveal" hidden></div>' +
+        '<div class="overlay start"></div><div class="overlay result" hidden></div>' +
+      '</div>');
+    this.wrap = this.q('.cv-wrap'); this.cv = this.q('canvas'); this.prompt = this.q('.geo-prompt');
+    this.ovS = this.q('.overlay.start'); this.ovR = this.q('.overlay.result');
+    this.card = this.q('.geo-card'); this.rev = this.q('.geo-reveal');
+    this.proj = d3.geoOrthographic().clipAngle(90).precision(.7);
+    this.bindPointer();
+    const si = this.q('#g11search');
+    si.addEventListener('input', () => this.searchInput(si.value));
+    si.addEventListener('keydown', e => { if (e.key === 'Enter'){ const b = this.q('.gs-res button'); if (b) b.click(); } if (e.key === 'Escape'){ si.value = ''; this.searchInput(''); si.blur(); } });
+    bindActs(this, {
+      play: () => this.start(), again: () => this.start(), change: () => changeOpts(this),
+      zin: () => this.zoomBy(1.6), zout: () => this.zoomBy(1 / 1.6), home: () => this.homeView(true),
+      next: () => this.next(),
+      quizCountry: () => { if (this.sel){ this.o.country = this.sel.id; this.o.mode = 'inside'; save(); this.renderOptions(); this.reset(); } },
+      closeCard: () => { this.sel = null; this.card.hidden = true; this.markDirty(); }
+    });
+    window.addEventListener('resize', () => { if (!this.sec.hidden) this.markDirty(); });
+  },
+  /* ---------- opciones ---------- */
+  summaryText(){
+    const o = this.o;
+    if (o.mode === 'free') return t('geoFree');
+    if (o.mode === 'countries') return t('geoCountries') + ' · ' + t('reg_' + o.region) + ' · ' + (o.rounds || t('all'));
+    const f = GEO.byId && GEO.byId.get(o.country);
+    return (f ? geoName(f.properties) : o.country) + ' · ' + t('in_' + o.inType);
+  },
+  renderOptions(){
+    const o = this.o, box = this.q('.opts'); box.innerHTML = '';
+    const redo = () => { save(); this.renderOptions(); this.reset(); };
+    seg(optBlock(box, t('geoMode'), t('geoModeNote_' + o.mode)), [{ v:'countries', label:t('geoCountries') }, { v:'inside', label:t('geoInside') }, { v:'free', label:t('geoFree') }], o.mode, v => { o.mode = v; redo(); });
+    if (o.mode === 'countries'){
+      seg(optBlock(box, t('region')), ['world', 'am', 'eu', 'as', 'af', 'oc'].map(r => ({ v:r, label:t('reg_' + r) })), o.region, v => { o.region = v; redo(); }, 'chips');
+      seg(optBlock(box, t('rounds')), [10, 15, 30, 0].map(n => ({ v:n, label:n ? String(n) : t('all') })), o.rounds, v => { o.rounds = v; redo(); });
+    }
+    if (o.mode === 'inside'){
+      const cb = optBlock(box, t('country'));
+      const sel = document.createElement('select'); sel.id = 'g11country'; sel.className = 'sel';
+      cb.appendChild(sel);
+      if (GEO.feats){
+        const list = GEO.feats.filter(f => f.properties.s && f.properties.ct !== 'an').slice().sort((a, b) => geoName(a.properties).localeCompare(geoName(b.properties), S.lang));
+        sel.innerHTML = list.map(f => '<option value="' + f.id + '"' + (f.id === o.country ? ' selected' : '') + '>' + escapeHTML(geoName(f.properties)) + '</option>').join('');
+      } else sel.innerHTML = '<option>' + t('loadingMap') + '</option>';
+      sel.addEventListener('change', () => { o.country = sel.value; if (o.inType === 'region' && !this.hasRegions(o.country)) o.inType = 'adm1'; redo(); });
+      const types = [{ v:'adm1', label:t('in_adm1'), sub:t('in_adm1Sub') }, { v:'cities', label:t('in_cities') }];
+      if (this.hasRegions(o.country)) types.splice(1, 0, { v:'region', label:t('in_region') });
+      seg(optBlock(box, t('lookFor'), t('inNote_' + o.inType)), types, o.inType, v => { o.inType = v; redo(); });
+      if (o.inType === 'cities') seg(optBlock(box, t('whichCities')), [10, 25, 50, 0].map(n => ({ v:n, label:n ? t('topN', { n }) : t('all') })), o.cityCount, v => { o.cityCount = v; redo(); });
+      seg(optBlock(box, t('rounds')), [10, 15, 30, 0].map(n => ({ v:n, label:n ? String(n) : t('all') })), o.inRounds, v => { o.inRounds = v; redo(); });
+    }
+    setSummary(this, this.summaryText());
+  },
+  hasRegions(code){
+    if (!GEO.adm1) return ['FRA', 'ITA', 'GBR', 'PHL', 'SVN', 'VNM', 'AZE', 'LVA', 'RUS', 'THA', 'UGA', 'ESP', 'CHL', 'PER', 'COL'].includes(code) && false;
+    return !!this.regionGroups(code);
+  },
+  regionGroups(code){
+    if (!GEO.adm1) return null;
+    const fs = GEO.adm1.by.get(code) || [];
+    if (fs.length < 25) return null;
+    const groups = new Map();
+    for (const f of fs){ const r = f.properties.r; if (!r) return null; if (!groups.has(r)) groups.set(r, []); groups.get(r).push(f); }
+    if (groups.size < 4 || groups.size > 40) return null;
+    return groups;
+  },
+  /* ---------- ciclo ---------- */
+  stop(){ cancelAnimationFrame(this.raf); this.raf = 0; cancelAnimationFrame(this.tick); this.tick = 0; clearTimeout(this.revealT); this.anim = null; this.vel = null; },
+  reset(){
+    this.stop();
+    this.state = 'idle'; this.flags.clear(); this.sel = null; this.lastResult = null;
+    this.card.hidden = true; this.rev.hidden = true; this.ovR.hidden = true;
+    this.prompt.hidden = true;
+    this.q('.geo-search').hidden = this.o.mode !== 'free';
+    this.q('#g11search').placeholder = t('searchPh');
+    this.q('.hud').hidden = this.o.mode === 'free';
+    this.wrap.classList.toggle('free', this.o.mode === 'free');
+    this.ovS.hidden = false;
+    this.ovS.innerHTML = '<span class="start-inner"><strong>' + t('loadingMap') + '</strong></span>';
+    refreshPalette();
+    const go = () => {
+      this.loaded = true;
+      this.renderOptions();
+      if (this.o.mode === 'free'){
+        this.ovS.hidden = true; this.state = 'free';
+        this.homeView(false);
+        if (this.view.k >= 2.5) adm1Load().then(() => this.markDirty());
+      } else {
+        this.ovS.innerHTML = startBlock(this.o.mode === 'countries' ? t('geoHowC') : t('geoHowI'));
+        this.homeView(false);
+      }
+      this.updateHud(); renderStats(this); this.markDirty();
+    };
+    const need = this.o.mode === 'inside' ? Promise.all([geoLoad(), adm1Load()]) : geoLoad();
+    need.then(go).catch(() => { this.ovS.innerHTML = '<span class="start-inner"><strong>' + t('loadFail') + '</strong></span>'; });
+    this.updateHud(); renderStats(this);
+  },
+  refresh(){
+    if (!this.loaded) return;
+    this.renderOptions();
+    if (this.state === 'idle') this.ovS.innerHTML = startBlock(this.o.mode === 'countries' ? t('geoHowC') : t('geoHowI'));
+    if (this.state === 'play' || this.state === 'reveal') this.showPrompt();
+    if (this.state === 'reveal') this.showReveal(this.lastWrong);
+    if (this.state === 'done') this.showResult();
+    if (this.sel) this.showCard(this.sel);
+    this.markDirty();
+  },
+  updateHud(){
+    const n = this.pool.length;
+    setHud(this, 'rnd', (this.state === 'idle' ? 0 : Math.min(this.i + 1, n)) + '/' + (n || (this.o.mode === 'countries' ? (this.o.rounds || '—') : (this.o.inRounds || '—'))));
+    setHud(this, 'hit', String(this.hits));
+    if (this.state === 'idle') setHud(this, 'tim', fmt(0, 1));
+  },
+  buildPool(){
+    const o = this.o;
+    let pool = [];
+    if (o.mode === 'countries'){
+      const cts = REGION_CT[o.region];
+      pool = GEO.feats.filter(f => f.properties.s && f.properties.ct !== 'an' && f.properties.ct !== 'sv' && (!cts || cts.includes(f.properties.ct))).map(f => ({ kind: 'country', f }));
+      pool = shuffle(pool); if (o.rounds) pool = pool.slice(0, o.rounds);
+    } else {
+      const cf = GEO.byId.get(o.country);
+      const near = x => d3.geoDistance(x, cf.cen) < 60 / DEG;
+      if (o.inType === 'cities'){
+        let cs = (GEO.cityBy.get(o.country) || []).filter(c => near([c.lon, c.lat]));
+        if (o.cityCount) cs = cs.slice(0, o.cityCount);
+        this.cityPool = cs;
+        pool = shuffle(cs.map(c => ({ kind: 'city', c })));
+      } else if (o.inType === 'region'){
+        const gr = this.regionGroups(o.country);
+        pool = shuffle([...gr.entries()].map(([name, fs]) => {
+          const geo = topojson.merge(GEO.adm1.topo, fs.map(f => GEO.adm1.topo.objects.adm1.geometries[f.idx]));
+          const f = { type: 'Feature', geometry: geo, properties: { es: name, en: name, te: 'Region' } };
+          f.cen = d3.geoCentroid(f); f.area = d3.geoArea(f); f.rad = geoRadius(f, f.cen);
+          return { kind: 'area', f };
+        }).filter(x => near(x.f.cen)));
+        this.areaSet = pool.map(x => x.f);
+      } else {
+        const fs = (GEO.adm1.by.get(o.country) || []).filter(f => near(f.cen));
+        this.areaSet = fs;
+        pool = shuffle(fs.map(f => ({ kind: 'area', f })));
+      }
+      if (o.inRounds) pool = pool.slice(0, o.inRounds);
+    }
+    return pool;
+  },
+  start(){
+    if (!GEO.feats) return;
+    collapseOnPhone(this);
+    this.pool = this.buildPool();
+    if (!this.pool.length){ toast(t('noItems')); return; }
+    this.total = this.pool.length;
+    this.i = 0; this.hits = 0; this.flags.clear(); this.misses = [];
+    this.ovS.hidden = true; this.ovR.hidden = true; this.rev.hidden = true;
+    this.state = 'play';
+    this.homeView(true);
+    this.t0 = performance.now();
+    cancelAnimationFrame(this.tick);
+    const tk = () => { if (this.state === 'play' || this.state === 'reveal'){ setHud(this, 'tim', fmt(performance.now() - this.t0, 1)); this.tick = requestAnimationFrame(tk); } };
+    this.tick = requestAnimationFrame(tk);
+    this.showPrompt(); this.updateHud(); this.markDirty();
+  },
+  cur(){ return this.pool[this.i]; },
+  itemName(it){ return it.kind === 'city' ? geoName(it.c) : geoName(it.f.properties); },
+  itemSub(it){
+    if (it.kind === 'country') return '';
+    if (it.kind === 'city') return it.c.k === 2 ? t('capitalCity') : (it.c.a1 || '');
+    return admType(it.f.properties);
+  },
+  showPrompt(){
+    const it = this.cur(); if (!it) return;
+    this.prompt.hidden = false;
+    this.prompt.innerHTML = '<span class="lab">' + t('findIt') + '</span><b>' + escapeHTML(this.itemName(it)) + '</b>' + (this.itemSub(it) ? '<span class="sub">' + escapeHTML(this.itemSub(it)) + '</span>' : '');
+  },
+  judge(x, y){
+    const it = this.cur(), P = this.proj;
+    const ll = this.screenToGeo(x, y);
+    const near = (cen, px) => { const p = P(cen); return p && d3.geoDistance(cen, this.center()) < Math.PI / 2 && Math.hypot(p[0] - x, p[1] - y) < px; };
+    if (it.kind === 'city'){
+      let best = null, bd = 1e9;
+      for (const c of this.cityPool){
+        if (d3.geoDistance([c.lon, c.lat], this.center()) > Math.PI / 2) continue;
+        const p = P([c.lon, c.lat]); const d = Math.hypot(p[0] - x, p[1] - y);
+        if (d < bd){ bd = d; best = c; }
+      }
+      if (!best || bd > 34) return null;
+      return { ok: best === it.c, hit: best };
+    }
+    const tf = it.f;
+    const set = it.kind === 'country' ? GEO.feats : this.areaSet;
+    const small = tf.area * Math.pow(this.scale(), 2) < 500;
+    let hit = null;
+    if (ll) for (const f of set){ if (d3.geoDistance(f.cen, ll) > f.rad + .02) continue; if (d3.geoContains(f, ll)){ hit = f; break; } }
+    if (hit === tf) return { ok: true, hit };
+    if (small && near(tf.cen, 24)) return { ok: true, hit: tf };
+    if (!hit && !ll) return null;
+    return { ok: false, hit };
+  },
+  tap(x, y){
+    if (this.state === 'free'){ this.freeTap(x, y); return; }
+    if (this.state !== 'play') return;
+    const r = this.judge(x, y);
+    if (!r) return;
+    const it = this.cur();
+    const key = it.kind === 'city' ? it.c : it.f;
+    if (r.ok){
+      this.hits++;
+      this.flags.set(key, 'ok');
+      this.updateHud(); this.markDirty();
+      this.state = 'wait';
+      this.revealT = setTimeout(() => { this.state = 'play'; this.next(); }, 650);
+    } else {
+      if (r.hit) this.flags.set(r.hit, 'bad');
+      this.flags.set(key, 'target');
+      this.misses.push(this.itemName(it));
+      this.lastWrong = { it, hit: r.hit };
+      this.state = 'reveal';
+      this.flyTo(it.kind === 'city' ? [it.c.lon, it.c.lat] : it.f.cen, it.kind === 'city' ? this.view.k : Math.max(this.view.k, Math.min(this.fitK(it.f, .07), this.view.k * 8)));
+      this.showReveal(this.lastWrong);
+      this.pulse();
+    }
+  },
+  showReveal(w){
+    if (!w) return;
+    const hitName = w.hit ? (w.hit.properties ? geoName(w.hit.properties) : geoName(w.hit)) : '';
+    this.rev.innerHTML = '<div><span class="lab">' + t('itWas') + '</span><b>' + escapeHTML(this.itemName(w.it)) + '</b>' + (hitName ? '<span class="sub">' + t('youTapped', { n: escapeHTML(hitName) }) + '</span>' : '') + '</div>' +
+      '<button class="btn primary" type="button" data-act="next">' + t('nextBtn') + ' →</button>';
+    this.rev.hidden = false;
+  },
+  next(){
+    if (this.state !== 'play' && this.state !== 'reveal') return;
+    clearTimeout(this.revealT);
+    const wasReveal = this.state === 'reveal';
+    this.rev.hidden = true;
+    this.flags.clear();
+    this.i++;
+    if (wasReveal && this.i < this.pool.length) this.homeView(true);
+    if (this.i >= this.pool.length){ this.finish(); return; }
+    this.state = 'play';
+    this.showPrompt(); this.updateHud(); this.markDirty();
+  },
+  finish(){
+    const sec = (performance.now() - this.t0) / 1000;
+    cancelAnimationFrame(this.tick);
+    this.state = 'done'; this.prompt.hidden = true;
+    setHud(this, 'tim', fmt(sec * 1000, 1));
+    const { isPB, prevBest } = saveRecord(this, this.enc(this.hits, sec), { k: this.hits, s: Math.round(sec) });
+    this.lastResult = { hits: this.hits, n: this.pool.length, sec, isPB: isPB && this.hits > 0, misses: this.misses.slice() };
+    this.showResult(); this.updateHud(); renderStats(this); this.markDirty();
+  },
+  showResult(){
+    const r = this.lastResult; if (!r) return;
+    const miss = r.misses.length ? '<div class="miss"><span>' + t('toReview') + '</span> ' + r.misses.slice(0, 12).map(escapeHTML).join(' · ') + (r.misses.length > 12 ? ' …' : '') + '</div>' : '';
+    this.ovR.innerHTML = resultHTML(r.isPB, r.hits, '/ ' + r.n, t('calcRes', { t: num(r.sec, 1) + ' s', p: num(r.sec / r.n, 1) + ' s' }), miss);
+    this.ovR.hidden = false;
+  },
+  /* ---------- modo libre ---------- */
+  freeTap(x, y){
+    const ll = this.screenToGeo(x, y);
+    if (!ll){ this.sel = null; this.card.hidden = true; this.markDirty(); return; }
+    let hit = null;
+    for (const f of GEO.feats){ if (d3.geoDistance(f.cen, ll) > f.rad + .02) continue; if (d3.geoContains(f, ll)){ hit = f; break; } }
+    this.sel = hit;
+    if (hit){ this.showCard(hit); } else this.card.hidden = true;
+    this.markDirty();
+  },
+  showCard(f){
+    const p = f.properties;
+    const ctn = t('ct_' + p.ct);
+    const n1 = GEO.adm1 ? (GEO.adm1.by.get(f.id) || []).length : 0;
+    this.card.innerHTML = '<div class="gc-head"><b>' + escapeHTML(geoName(p)) + '</b><button class="icon-btn sm" type="button" data-act="closeCard" aria-label="×">×</button></div>' +
+      '<dl>' + (p.ce ? '<dt>' + t('capital') + '</dt><dd>★ ' + escapeHTML(S.lang === 'es' ? p.ce : p.cn) + '</dd>' : '') +
+      '<dt>' + t('continent') + '</dt><dd>' + ctn + '</dd>' + (n1 > 1 ? '<dt>' + t('divisions') + '</dt><dd>' + n1 + '</dd>' : '') + '</dl>' +
+      (p.s ? '<button class="btn sm" type="button" data-act="quizCountry">' + t('practiceCountry') + '</button>' : '');
+    this.card.hidden = false;
+  },
+  searchInput(q){
+    const box = this.q('.gs-res');
+    const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    q = norm(q.trim());
+    if (q.length < 2 || !GEO.feats){ box.innerHTML = ''; return; }
+    const res = [];
+    for (const f of GEO.feats){ const n = norm(geoName(f.properties)); if (n.startsWith(q) || n.includes(' ' + q)) res.push({ type: 'country', f, n: geoName(f.properties) }); if (res.length >= 5) break; }
+    for (const c of GEO.cities){ if (res.length >= 8) break; const n = norm(geoName(c)); if (n.startsWith(q)){ const cf = GEO.byId.get(c.c); res.push({ type: 'city', c, n: geoName(c) + (cf ? ', ' + geoName(cf.properties) : '') }); } }
+    box.innerHTML = '';
+    res.forEach(r => {
+      const b = document.createElement('button'); b.type = 'button';
+      b.innerHTML = '<span>' + escapeHTML(r.n) + '</span><small>' + (r.type === 'city' ? t('city') : t('country')) + '</small>';
+      b.addEventListener('click', () => {
+        box.innerHTML = ''; this.q('#g11search').value = ''; this.q('#g11search').blur();
+        if (r.type === 'country'){ this.sel = r.f; this.showCard(r.f); this.flyTo(r.f.cen, this.fitK(r.f, .36)); }
+        else { this.focusCity = r.c; this.sel = null; this.card.hidden = true; this.flyTo([r.c.lon, r.c.lat], Math.max(this.view.k, 9)); setTimeout(() => { if (this.focusCity === r.c){ this.focusCity = null; this.markDirty(); } }, 5000); }
+      });
+      box.appendChild(b);
+    });
+  },
+  /* ---------- vista ---------- */
+  center(){ return [this.view.lon, this.view.lat]; },
+  baseR(){ return this._w ? Math.min(this._w, this._h) * .46 : 200; },
+  scale(){ return this.baseR() * this.view.k; },
+  fitK(f, frac, keepIfBigger){
+    const ang = Math.max(f.rad, .004);
+    const want = Math.min(this._w || 400, this._h || 400) * frac;
+    let k = ang >= Math.PI / 2 ? 1 : want / (this.baseR() * Math.sin(ang));
+    k = clamp(k, 1, 80);
+    if (keepIfBigger && this.view.k > k && this.view.k < k * 3) k = this.view.k;
+    return k;
+  },
+  homeView(animate){
+    const o = this.o;
+    let c = REGION_VIEW.world, k = 1;
+    if (o.mode === 'countries') c = REGION_VIEW[o.region] || c, k = o.region === 'world' ? 1 : o.region === 'eu' ? 2.6 : 1.5;
+    if (o.mode === 'inside' && GEO.byId && GEO.byId.get(o.country)){
+      const cf = GEO.byId.get(o.country);
+      c = cf.cen;
+      const fs = (GEO.adm1 && GEO.adm1.by.get(o.country) || []).filter(f => d3.geoDistance(f.cen, cf.cen) < 60 / DEG);
+      if (fs.length){
+        const ds = fs.map(f => d3.geoDistance(f.cen, cf.cen) + Math.min(f.rad, .2)).sort((a, b) => a - b);
+        const ang = ds[Math.floor((ds.length - 1) * .88)] || cf.rad;
+        k = this.fitK({ rad: ang }, .44);
+      } else k = this.fitK(cf, .4);
+    }
+    if (o.mode === 'free') c = this.view.k > 1.2 ? this.center() : REGION_VIEW.world, k = animate ? 1 : this.view.k;
+    if (animate) this.flyTo(c, k); else { this.view = { lon: c[0], lat: c[1], k }; this.markDirty(); }
+  },
+  zoomBy(f){ this.flyTo(this.center(), clamp(this.view.k * f, 1, 80), 260); },
+  flyTo(cen, k, dur){
+    dur = dur || 750;
+    const from = this.center(), k0 = this.view.k, interp = d3.geoInterpolate(from, cen), t0 = performance.now();
+    this.vel = null;
+    this.anim = now => {
+      const u = clamp((now - t0) / dur, 0, 1), e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      const c = interp(e);
+      this.view.lon = c[0]; this.view.lat = c[1];
+      this.view.k = Math.exp(Math.log(k0) + (Math.log(k) - Math.log(k0)) * e);
+      return u < 1;
+    };
+    this.loop();
+  },
+  pulse(){ this.pulseUntil = performance.now() + 2400; this.loop(); },
+  screenToGeo(x, y){
+    const r = this.scale(), cx = this._w / 2, cy = this._h / 2;
+    if (Math.hypot(x - cx, y - cy) > r) return null;
+    const ll = this.proj.invert([x, y]);
+    return ll && isFinite(ll[0]) ? ll : null;
+  },
+  markDirty(){ this.dirty = true; this.loop(); },
+  loop(){
+    if (this.raf) return;
+    const run = now => {
+      this.raf = 0;
+      let more = false;
+      if (this.anim){ if (!this.anim(now)) this.anim = null; else more = true; }
+      if (this.vel){
+        const v = this.vel;
+        this.view.lon -= v.x; this.view.lat = clamp(this.view.lat + v.y, -85, 85);
+        v.x *= .92; v.y *= .92;
+        if (Math.abs(v.x) + Math.abs(v.y) < .01) this.vel = null; else more = true;
+      }
+      if (this.pulseUntil && now < this.pulseUntil) more = true;
+      if (this.focusCity) more = more || false;
+      this.render(now);
+      if (more) this.raf = requestAnimationFrame(run);
+    };
+    this.raf = requestAnimationFrame(run);
+  },
+  bindPointer(){
+    const pts = new Map();
+    let start = null, pinch = null, lastMove = null;
+    const pos = e => { const r = this.cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    this.cv.addEventListener('pointerdown', e => {
+      if (!this.loaded) return;
+      e.preventDefault();
+      try{ this.cv.setPointerCapture(e.pointerId); }catch(err){}
+      const p = pos(e); pts.set(e.pointerId, p);
+      this.anim = null; this.vel = null;
+      if (pts.size === 1){ start = { x: p.x, y: p.y, t: performance.now(), moved: false }; lastMove = { x: p.x, y: p.y, t: performance.now(), vx: 0, vy: 0 }; }
+      if (pts.size === 2){ const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), k: this.view.k }; if (start) start.moved = true; }
+    });
+    this.cv.addEventListener('pointermove', e => {
+      if (!pts.has(e.pointerId)) return;
+      const p = pos(e), prev = pts.get(e.pointerId);
+      pts.set(e.pointerId, p);
+      if (pts.size >= 2 && pinch){
+        const [a, b] = [...pts.values()];
+        this.view.k = clamp(pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / Math.max(10, pinch.d), 1, 80);
+        this.markDirty(); return;
+      }
+      const dx = p.x - prev.x, dy = p.y - prev.y;
+      if (start && Math.hypot(p.x - start.x, p.y - start.y) > 7) start.moved = true;
+      if (!start || !start.moved) return;
+      const deg = DEG / this.scale();
+      const cosl = Math.max(.25, Math.cos(this.view.lat / DEG));
+      this.view.lon -= dx * deg / cosl * .9; this.view.lat = clamp(this.view.lat + dy * deg, -85, 85);
+      const now = performance.now();
+      lastMove = { x: p.x, y: p.y, t: now, vx: dx * deg / cosl * .9, vy: dy * deg };
+      this.markDirty();
+    });
+    const end = e => {
+      if (!pts.has(e.pointerId)) return;
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = null;
+      if (pts.size === 0){
+        if (start && !start.moved && performance.now() - start.t < 600){ const p = pos(e); this.tap(p.x, p.y); }
+        else if (lastMove && performance.now() - lastMove.t < 60){ this.vel = { x: lastMove.vx, y: lastMove.vy }; this.loop(); }
+        start = null;
+        if (this.state === 'free' && this.view.k >= 2.5 && !GEO.adm1) adm1Load().then(() => this.markDirty());
+      }
+    };
+    this.cv.addEventListener('pointerup', end); this.cv.addEventListener('pointercancel', end);
+    this.cv.addEventListener('wheel', e => {
+      if (!this.loaded) return;
+      e.preventDefault();
+      this.view.k = clamp(this.view.k * Math.exp(-e.deltaY * .0016), 1, 80);
+      if (this.state === 'free' && this.view.k >= 2.5 && !GEO.adm1) adm1Load().then(() => this.markDirty());
+      this.markDirty();
+    }, { passive: false });
+  },
+  /* ---------- dibujo ---------- */
+  render(now){
+    if (this.sec.hidden || !GEO.feats) return;
+    const { ctx: c, w, h } = fitCanvas(this.cv);
+    this._w = w; this._h = h;
+    const P = this.proj.translate([w / 2, h / 2]).scale(this.scale()).rotate([-this.view.lon, -this.view.lat]);
+    const path = d3.geoPath(P, c);
+    const cen = this.center(), k = this.view.k;
+    const capA = Math.asin(Math.min(1, Math.hypot(w, h) / 2 / this.scale()));
+    const vis = f => d3.geoDistance(f.cen, cen) < capA + f.rad + .02;
+    c.clearRect(0, 0, w, h);
+    if (this.state === 'free' && k >= 2.5 && !GEO.adm1P) adm1Load().then(() => this.markDirty());
+    c.beginPath(); path({ type: 'Sphere' }); c.fillStyle = PAL.sea; c.fill();
+    if (k < 6){ c.beginPath(); path(d3.geoGraticule10()); c.strokeStyle = PAL.grat; c.lineWidth = .6; c.stroke(); }
+    const land = [PAL.land1, PAL.land2, PAL.land3, PAL.land4, PAL.land5, PAL.land6];
+    const quizArea = (this.state !== 'free' && this.o.mode === 'inside' && this.o.inType !== 'cities');
+    const pulseOn = this.pulseUntil && now < this.pulseUntil ? (Math.sin(now / 120) > 0) : true;
+    const lowRes = k < 2.4;
+    for (const f of GEO.feats){
+      if (!vis(f)) continue;
+      c.beginPath(); path(lowRes ? (GEO.lo.get(f.id) || f) : f);
+      let col = land[f.ci];
+      if (quizArea && f.id !== this.o.country) col = PAL.landDim;
+      const fl = this.flags.get(f);
+      if (fl === 'ok') col = PAL.hi; else if (fl === 'bad') col = PAL.danger; else if (fl === 'target') col = pulseOn ? PAL.hi : PAL.hiSoft;
+      if (this.sel === f) col = PAL.accent;
+      c.fillStyle = col; c.fill();
+    }
+    c.beginPath(); path(lowRes ? GEO.bordersLo : GEO.borders); c.strokeStyle = PAL.border; c.lineWidth = k > 4 ? 1.1 : .7; c.stroke();
+    if (quizArea && this.areaSet){
+      for (const f of this.areaSet){
+        const fl = this.flags.get(f);
+        c.beginPath(); path(f);
+        c.fillStyle = fl === 'ok' ? PAL.hi : fl === 'bad' ? PAL.danger : fl === 'target' ? (pulseOn ? PAL.hi : PAL.hiSoft) : land[(f.idx !== undefined ? f.idx : this.areaSet.indexOf(f)) % 6];
+        c.fill(); c.strokeStyle = PAL.border; c.lineWidth = 1; c.stroke();
+      }
+    }
+    const showAdm = GEO.adm1 && ((this.state === 'free' && k >= 2.5) || (this.o.mode === 'inside' && this.o.inType === 'cities' && this.state !== 'free'));
+    if (showAdm){
+      c.beginPath();
+      const codes = this.state === 'free' ? GEO.feats.filter(f => vis(f) && f.area * Math.pow(this.scale(), 2) > 900).map(f => f.id) : [this.o.country];
+      codes.forEach(code => { if (GEO.adm1.by.has(code)) path(GEO.adm1.mesh(code)); });
+      c.strokeStyle = PAL.border; c.globalAlpha = .55; c.lineWidth = .6; c.setLineDash([3, 3]); c.stroke(); c.setLineDash([]); c.globalAlpha = 1;
+    }
+    if (this.sel){ c.beginPath(); path(this.sel); c.strokeStyle = PAL.fg; c.lineWidth = 2; c.stroke(); }
+    c.beginPath(); path({ type: 'Sphere' }); c.strokeStyle = PAL.border; c.lineWidth = 1.2; c.stroke();
+    const boxes = [];
+    const place = (x, y, wd, ht) => { const b = [x - wd / 2 - 3, y - ht / 2 - 2, x + wd / 2 + 3, y + ht / 2 + 2]; if (b[0] < 2 || b[2] > w - 2 || b[1] < 2 || b[3] > h - 2) return false; for (const o of boxes) if (b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]) return false; boxes.push(b); return true; };
+    const visPt = ll => d3.geoDistance(ll, cen) < Math.PI / 2 - .03;
+    const ff = this._ff || (this._ff = getComputedStyle(document.body).getPropertyValue('--f-body'));
+    const font = (wt, sz, it) => (it ? 'italic ' : '') + wt + ' ' + sz + 'px ' + ff;
+    const label = (txt, ll, sz, col, wt, italic, dot, star) => {
+      if (!visPt(ll)) return false;
+      const p = P(ll); if (!p) return false;
+      c.font = font(wt || 600, sz, italic);
+      const tw = c.measureText(txt).width;
+      const ly = dot ? p[1] - sz * .9 : p[1];
+      if (!place(p[0], ly, tw, sz * 1.15)) return false;
+      if (dot){ c.beginPath(); c.arc(p[0], p[1], star ? 3.6 : 2.6, 0, Math.PI * 2); c.fillStyle = star ? PAL.danger : PAL.fg; c.fill(); c.strokeStyle = PAL.surface; c.lineWidth = 1.2; c.stroke(); }
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.lineWidth = 3; c.strokeStyle = PAL.halo; c.lineJoin = 'round'; c.strokeText(txt, p[0], ly);
+      c.fillStyle = col; c.fillText(txt, p[0], ly);
+      return true;
+    };
+    /* ciudades en el modo de ciudades */
+    if (this.state !== 'free' && this.o.mode === 'inside' && this.o.inType === 'cities' && this.cityPool && this.state !== 'idle'){
+      const curC = this.cur() && this.cur().c;
+      for (const ci of this.cityPool){
+        const ll = [ci.lon, ci.lat]; if (!visPt(ll)) continue;
+        const p = P(ll), fl = this.flags.get(ci);
+        c.beginPath(); c.arc(p[0], p[1], fl ? 7 : 5, 0, Math.PI * 2);
+        c.fillStyle = fl === 'ok' ? PAL.hi : fl === 'bad' ? PAL.danger : fl === 'target' ? (pulseOn ? PAL.hi : PAL.hiSoft) : PAL.fg;
+        c.fill(); c.strokeStyle = PAL.surface; c.lineWidth = 1.6; c.stroke();
+        if (fl && fl !== 'ok' || (this.state === 'reveal' && ci === curC)) { /* etiqueta abajo */ }
+      }
+      if (this.state === 'reveal' && this.lastWrong){
+        const w0 = this.lastWrong;
+        label(geoName(w0.it.c), [w0.it.c.lon, w0.it.c.lat], 14, PAL.fg, 700, false, false);
+        if (w0.hit) label(geoName(w0.hit), [w0.hit.lon, w0.hit.lat], 12, PAL.danger, 600, false, false);
+      }
+    }
+    if (this.state === 'reveal' && this.lastWrong && this.lastWrong.it.kind !== 'city'){
+      label(this.itemName(this.lastWrong.it), this.lastWrong.it.f.cen, 15, PAL.fg, 700);
+    }
+    if (this.state === 'done' || this.state === 'reveal'){ /* sin más etiquetas */ }
+    if (this.state === 'free'){
+      for (const m of GEO.marine){
+        const need = m.cla === 'ocean' ? 0 : m.cla === 'sea' ? 1.5 : 3.5 + m.rank * .4;
+        if (k < need) continue;
+        const sz = m.cla === 'ocean' ? 14 : 11.5;
+        label(m.cla === 'ocean' ? geoName(m).toUpperCase() : geoName(m), [m.lon, m.lat], sz, PAL.seaText, m.cla === 'ocean' ? 600 : 500, true);
+      }
+      const R = this.scale();
+      const cands = GEO.feats.filter(f => vis(f) && f.properties.ct !== 'sv').map(f => ({ f, s: Math.sqrt(f.area) * R })).sort((a, b) => b.s - a.s);
+      for (const { f, s } of cands){
+        if (s < 26 && f !== this.sel) continue;
+        const sz = clamp(9 + s / 22, 10, 17);
+        label(geoName(f.properties), f.cen, sz, PAL.fg, 700);
+      }
+      if (k >= 2.2){
+        for (const f of cands){
+          const p = f.f.properties;
+          if (!p.ce || (f.s < 40 && f.f !== this.sel)) continue;
+          label(S.lang === 'es' ? p.ce : p.cn, [p.cx, p.cy], 11, PAL.fg, 600, false, true, true);
+        }
+      }
+      if (GEO.adm1 && k >= 4.5){
+        let n = 0;
+        const vc = GEO.feats.filter(f => vis(f) && f.area * R * R > 2500);
+        for (const f of vc.flatMap(cf => GEO.adm1.by.get(cf.id) || [])){
+          if (n > 60) break;
+          if (!vis(f)) continue;
+          const s = Math.sqrt(f.area) * R;
+          if (s < 46) continue;
+          if (label(geoName(f.properties), f.cen, clamp(8 + s / 40, 9.5, 13), PAL.admText, 600, true)) n++;
+        }
+      }
+      if (k >= 3){
+        const minPop = k >= 25 ? 0 : k >= 14 ? 5e4 : k >= 8 ? 2.5e5 : k >= 5 ? 1e6 : 3e6;
+        let n = 0;
+        for (const ci of GEO.cities){
+          if (ci.pop < minPop) break;
+          if (n > 70) break;
+          if (ci.k === 2) continue;
+          if (label(geoName(ci), [ci.lon, ci.lat], 11, PAL.fg, 500, false, true)) n++;
+        }
+      }
+      if (this.focusCity){
+        const fc = this.focusCity, ll = [fc.lon, fc.lat];
+        if (visPt(ll)){ const p = P(ll); c.beginPath(); c.arc(p[0], p[1], 9, 0, Math.PI * 2); c.strokeStyle = PAL.accent; c.lineWidth = 3; c.stroke(); }
+        boxes.length = 0; label(geoName(fc), ll, 14, PAL.accent, 700);
+      }
+    }
+  },
+  onKey(e){
+    if (e.target && e.target.tagName === 'SELECT') return true;
+    if ((e.key === 'Enter' || e.key === ' ') && this.state === 'reveal'){ e.preventDefault(); this.next(); return true; }
+    if (e.key === '+' || e.key === '='){ this.zoomBy(1.4); return true; }
+    if (e.key === '-'){ this.zoomBy(1 / 1.4); return true; }
+    if (e.key.startsWith('Arrow') && this.loaded){
+      e.preventDefault();
+      const st = 12 / this.view.k;
+      if (e.key === 'ArrowLeft') this.view.lon -= st; if (e.key === 'ArrowRight') this.view.lon += st;
+      if (e.key === 'ArrowUp') this.view.lat = clamp(this.view.lat + st, -85, 85); if (e.key === 'ArrowDown') this.view.lat = clamp(this.view.lat - st, -85, 85);
+      this.markDirty(); return true;
+    }
+    return false;
+  }
+};
+
+/* =========================================================
    Registro de juegos, inicio y navegación
    ========================================================= */
 const G2 = makeReaction('g2', false);
 const G5 = makeReaction('g5', true);
-const OBJ = { g1: G1, g2: G2, g3: G3, g4: G4, g5: G5, g6: G6, g7: G7, g8: G8, g9: G9, g10: G10 };
-const ROUND_NOW = 4;
+const OBJ = { g1: G1, g2: G2, g3: G3, g4: G4, g5: G5, g6: G6, g7: G7, g8: G8, g9: G9, g10: G10, g11: G11, g12: G12, g13: G13, g14: G14 };
+const ROUND_NOW = 5;
 const GAMES = [
   { id:'g1', round:1 }, { id:'g2', round:2 }, { id:'g3', round:2 }, { id:'g4', round:2 }, { id:'g5', round:2 },
-  { id:'g6', round:3 }, { id:'g7', round:3 }, { id:'g8', round:3 }, { id:'g9', round:3 }, { id:'g10', round:4 }
+  { id:'g6', round:3 }, { id:'g7', round:3 }, { id:'g8', round:3 }, { id:'g9', round:3 }, { id:'g10', round:4 }, { id:'g11', round:5, wide:true },
+  { id:'g12', round:5, duo:true }, { id:'g13', round:5, duo:true }, { id:'g14', round:5, duo:true }
 ];
 const IC = {
   g1: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6" fill="currentColor"/></svg>',
@@ -2897,23 +4458,27 @@ const IC = {
   g7: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="7" cy="17" r="3"/><rect x="14" y="14" width="6" height="6" rx="1" fill="currentColor"/></svg>',
   g8: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>',
   g9: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3v18M16 3v18"/><rect x="9.5" y="5" width="5" height="6" rx="1" fill="currentColor"/><rect x="3" y="13" width="3.5" height="5" rx="1" fill="currentColor"/><rect x="17.5" y="9" width="3.5" height="5" rx="1"/></svg>',
-  g10: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h7M7.5 3.5v7M14 5.5l5.5 5.5M19.5 5.5 14 11M4 17h7"/><circle cx="7.5" cy="14.3" r=".9" fill="currentColor"/><circle cx="7.5" cy="19.7" r=".9" fill="currentColor"/><path d="M14 15h6M14 19h6"/></svg>'
+  g10: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h7M7.5 3.5v7M14 5.5l5.5 5.5M19.5 5.5 14 11M4 17h7"/><circle cx="7.5" cy="14.3" r=".9" fill="currentColor"/><circle cx="7.5" cy="19.7" r=".9" fill="currentColor"/><path d="M14 15h6M14 19h6"/></svg>',
+  g11: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5S9.4 5.9 12 3.5"/></svg>',
+  g12: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8" cy="9" r="1.8"/><circle cx="12" cy="9" r="1.8"/><circle cx="16" cy="15" r="1.8" fill="currentColor"/><circle cx="12" cy="15" r="1.8" fill="currentColor"/><circle cx="8" cy="15" r="1.8"/><circle cx="16" cy="9" r="1.8" fill="currentColor"/></svg>',
+  g13: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3.5v17M15 3.5v17M3.5 9h17M3.5 15h17"/><path d="M4.8 4.8l2.4 2.4M7.2 4.8 4.8 7.2"/><circle cx="18" cy="18" r="1.6"/></svg>',
+  g14: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M5 12h14M10 2.5h4M10 21.5h4"/><circle cx="12" cy="16.5" r="2.2" fill="currentColor"/><circle cx="10" cy="8" r="1.4"/></svg>'
 };
 
 let current = null;
 function renderGames(){
-  const wrap = $('games');
-  wrap.innerHTML = '';
+  $('games').innerHTML = ''; $('gamesDuo').innerHTML = '';
   GAMES.forEach(g => {
+    const wrap = g.duo ? $('gamesDuo') : $('games');
     const [name, skills] = t('games')[g.id];
     const b = document.createElement('button');
     b.type = 'button';
     const avail = g.round <= ROUND_NOW && OBJ[g.id];
-    b.className = 'card' + (avail ? '' : ' locked');
+    b.className = 'card' + (avail ? '' : ' locked') + (g.wide ? ' wide' : '');
     let foot;
     if (avail){
       const r = store.rec[OBJ[g.id].key()];
-      foot = r && r.best !== null ? '<span>' + t('record') + '</span><span class="rec">' + OBJ[g.id].cardText(r) + '</span>' : '<span class="go">' + t('play') + ' →</span>';
+      foot = r && r.best !== null && !g.duo ? '<span>' + t('record') + '</span><span class="rec">' + OBJ[g.id].cardText(r) + '</span>' : '<span class="go">' + t('play') + ' →</span>';
     } else foot = '<span>' + t('soon', { n: g.round }) + '</span>';
     b.innerHTML = '<span class="ico" aria-hidden="true">' + IC[g.id] + '</span><span><h3>' + name + '</h3><div class="skills">' + skills + '</div></span><span class="foot">' + foot + '</span>';
     b.addEventListener('click', () => { if (avail) openGame(g.id); else toast(t('soonToast', { g: name, n: g.round })); });
@@ -2990,10 +4555,11 @@ document.addEventListener('keydown', e => {
 });
 
 /* arranque */
-[G1, G2, G3, G4, G5, G6, G7, G8, G9, G10].forEach(g => g.init());
+[G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14].forEach(g => g.init());
 applyTheme();
 applyTexts();
 renderGames();
+window.__ratico = { OBJ, GEO };
 })();
 </script>
 
