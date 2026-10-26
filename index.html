@@ -754,7 +754,9 @@ const I18N = {
     in_adm1: 'Divisiones', in_adm1Sub: 'deptos., estados', in_region: 'Regiones', in_cities: 'Ciudades',
     inNote_adm1: 'Departamentos, estados o provincias, según el país.',
     inNote_region: 'Grupos más grandes que reúnen varias divisiones.',
-    inNote_cities: 'Las ciudades salen como puntos en el mapa, sin el nombre.',
+    inNote_cities: 'Cada ciudad sale con su forma real (su mancha urbana), sin el nombre. Acércate para verla mejor; las muy pequeñas salen como punto.',
+    divisionOne: 'División', population: 'Población',
+    lvNote1: 'Se equivoca seguido.', lvNote2: 'Juega bien, pero a veces se descuida.', lvNote3: 'Juega muy bien. Prepárate.', lvNote3x: 'Nunca pierde: lo mejor que puedes lograr es empatar.',
     whichCities: 'Qué ciudades', topN: 'Top {n}',
     loadingMap: 'Cargando el mapa…', loadFail: 'No se pudo cargar el mapa. Revisa la conexión y vuelve a abrir el juego.',
     geoHowC: 'Gira el globo con el dedo, acércate con dos dedos y toca el país que te pidan.',
@@ -934,7 +936,9 @@ const I18N = {
     in_adm1: 'Divisions', in_adm1Sub: 'states, provinces', in_region: 'Regions', in_cities: 'Cities',
     inNote_adm1: 'States, provinces or departments, depending on the country.',
     inNote_region: 'Larger groups made of several divisions.',
-    inNote_cities: 'Cities show as dots on the map, without names.',
+    inNote_cities: 'Each city shows with its real shape (its urban area), without the name. Zoom in to see it better; very small ones show as a dot.',
+    divisionOne: 'Division', population: 'Population',
+    lvNote1: 'Makes mistakes often.', lvNote2: 'Plays well but slips now and then.', lvNote3: 'Plays very well. Get ready.', lvNote3x: 'Never loses: the best you can get is a draw.',
     whichCities: 'Which cities', topN: 'Top {n}',
     loadingMap: 'Loading the map…', loadFail: 'The map could not load. Check your connection and reopen the game.',
     geoHowC: 'Spin the globe with a finger, pinch to zoom and tap the country you are asked for.',
@@ -3096,7 +3100,7 @@ function namesBlock(box, g){
 function duoModeBlocks(box, g, redo, levels){
   const o = g.o;
   seg(optBlock(box, t('opponent')), [{ v:'2p', label:t('twoPlayers') }, { v:'cpu', label:t('vsCpu') }], o.mode, v => { o.mode = v; redo(); });
-  if (o.mode === 'cpu') seg(optBlock(box, t('cpuLevel')), levels.map((k, i) => ({ v:i + 1, label:t(k) })), o.level, v => { o.level = v; redo(); });
+  if (o.mode === 'cpu') seg(optBlock(box, t('cpuLevel'), t('lvNote' + o.level + (levels[o.level - 1] === 'impossible' ? 'x' : ''))), levels.map((k, i) => ({ v:i + 1, label:t(k) })), o.level, v => { o.level = v; redo(); });
   if (g.firstOpt !== false) seg(optBlock(box, t('whoStarts')), [{ v:'alt', label:t('alternate') }, { v:'1', label:o.mode === 'cpu' ? t('you') : t('playerN', { n: 1 }) }, { v:'2', label:o.mode === 'cpu' ? t('cpu') : t('playerN', { n: 2 }) }], o.first, v => { o.first = v; redo(); });
 }
 function nextStarter(g){
@@ -3246,8 +3250,9 @@ const G12 = {
     this.timer = setTimeout(() => {
       const lv = this.o.level;
       let c;
-      if (lv === 1 && Math.random() < .4){ const free = range(0, C4C - 1).filter(x => this.h[x] < C4R); c = pick(free); }
-      else c = c4Best(this.b, this.h, 2, lv === 1 ? 2 : lv === 2 ? 4 : 7);
+      const rnd = lv === 1 ? .55 : lv === 2 ? .15 : 0;
+      if (Math.random() < rnd){ const free = range(0, C4C - 1).filter(x => this.h[x] < C4R); c = pick(free); }
+      else c = c4Best(this.b, this.h, 2, lv === 1 ? 2 : lv === 2 ? 3 : 5);
       this.busy = false;
       this.play(c);
     }, 420);
@@ -3278,7 +3283,8 @@ const G12 = {
 /* =========================================================
    Juego 13: tres en raya
    ========================================================= */
-store.g13 = Object.assign({ mode: '2p', level: 3, first: 'alt', variant: 'classic' }, store.g13 || {});
+store.g13 = Object.assign({ mode: '2p', level: 2, first: 'alt', variant: 'classic' }, store.g13 || {});
+if (!store.cpuFix1){ store.cpuFix1 = true; [store.g12, store.g13].forEach(o => { if (o && o.level > 2) o.level = 2; }); }
 const T3L = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 function t3Winner(b){ for (const l of T3L) if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return { p: b[l[0]], line: l }; return null; }
 function t3Apply(st, i, p, vanish){
@@ -3390,7 +3396,7 @@ const G13 = {
     this.busy = true; this.paint(); this.paintTurn();
     this.timer = setTimeout(() => {
       const lv = this.o.level, free = range(0, 8).filter(i => !this.st.b[i]);
-      const rnd = lv === 1 ? .6 : lv === 2 ? .22 : 0;
+      const rnd = lv === 1 ? .75 : lv === 2 ? .4 : 0;
       const i = Math.random() < rnd ? pick(free) : t3Best(this.st, 2, this.vanish);
       this.busy = false;
       this.play(i);
@@ -3626,7 +3632,14 @@ const G14 = {
     else move(this.m[1], 'a', 'd', 'w', 's');
   },
   cpu(dt){
-    const m = this.m[2], p = this.puck, lv = this.o.level;
+    const m = this.m[2], lv = this.o.level;
+    this.cpuT = (this.cpuT || 0) - dt;
+    if (this.cpuT <= 0 || !this.cpuAim){
+      this.cpuT = [.26, .15, .07][lv - 1];
+      const noise = [46, 22, 6][lv - 1];
+      this.cpuAim = { x: this.puck.x + (Math.random() - .5) * noise, y: this.puck.y + (Math.random() - .5) * noise, vx: this.puck.vx, vy: this.puck.vy };
+    }
+    const p = this.cpuAim;
     const goal = { x: HW / 2, y: HH + 60 };
     let tx, ty;
     if (p.y < HMID + 10){
@@ -3641,7 +3654,7 @@ const G14 = {
       const lead = p.vy < 0 ? clamp(p.x + p.vx * ((p.y - 130) / Math.max(200, -p.vy)) * .5, GX0, GX1) : HW / 2 + (p.x - HW / 2) * .35;
       tx = lead; ty = 115;
     }
-    const sp = [480, 820, 1250][lv - 1];
+    const sp = [360, 600, 950][lv - 1];
     const dx = tx - m.x, dy = ty - m.y, L = Math.hypot(dx, dy);
     const stp = Math.min(L, sp * dt * 2.2);
     if (L > 0.5){ m.tx = m.x + dx / L * stp * 1.4; m.ty = m.y + dy / L * stp * 1.4; }
@@ -3828,6 +3841,30 @@ function adm1Load(){
   });
   return GEO.adm1P;
 }
+function urbanLoad(){
+  if (!GEO.urbanP) GEO.urbanP = Promise.all([geoLoad(), fetch('data/urban.json').then(r => r.json())]).then(([, rows]) => {
+    const Q = 400;
+    rows.forEach(r => {
+      const ci = GEO.cities[r[0]]; if (!ci) return;
+      const polys = [];
+      for (let k = 1; k < r.length; k++){
+        const d = r[k]; let x = d[0], y = d[1]; const ring = [[x / Q, y / Q]];
+        for (let i = 2; i < d.length; i += 2){ x += d[i]; y += d[i + 1]; ring.push([x / Q, y / Q]); }
+        ring.push(ring[0].slice());
+        let a = 0; for (let i = 0; i < ring.length - 1; i++) a += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+        if (a > 0) ring.reverse();
+        polys.push([ring]);
+      }
+      const f = { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: polys }, properties: {} };
+      f.area = d3.geoArea(f);
+      if (f.area > 2 * Math.PI) return;
+      f.cen = [ci.lon, ci.lat]; f.rad = geoRadius(f, f.cen);
+      ci.shape = f;
+    });
+    GEO.urban = true;
+  });
+  return GEO.urbanP;
+}
 function geoRadius(f, cen){
   let m = 0;
   const visit = cs => { for (let i = 0; i < cs.length; i += 3){ const d = d3.geoDistance(cen, cs[i]); if (d > m) m = d; } };
@@ -3884,7 +3921,7 @@ const G11 = {
       zin: () => this.zoomBy(1.6), zout: () => this.zoomBy(1 / 1.6), home: () => this.homeView(true),
       next: () => this.next(),
       quizCountry: () => { if (this.sel){ this.o.country = this.sel.id; this.o.mode = 'inside'; save(); this.renderOptions(); this.reset(); } },
-      closeCard: () => { this.sel = null; this.card.hidden = true; this.markDirty(); }
+      closeCard: () => { this.sel = null; this.focusCity = null; this.card.hidden = true; this.markDirty(); }
     });
     window.addEventListener('resize', () => { if (!this.sec.hidden) this.markDirty(); });
   },
@@ -3961,7 +3998,7 @@ const G11 = {
       }
       this.updateHud(); renderStats(this); this.markDirty();
     };
-    const need = this.o.mode === 'inside' ? Promise.all([geoLoad(), adm1Load()]) : geoLoad();
+    const need = this.o.mode === 'inside' ? Promise.all([geoLoad(), adm1Load()].concat(this.o.inType === 'cities' ? [urbanLoad()] : [])) : geoLoad();
     need.then(go).catch(() => { this.ovS.innerHTML = '<span class="start-inner"><strong>' + t('loadFail') + '</strong></span>'; });
     this.updateHud(); renderStats(this);
   },
@@ -4047,13 +4084,29 @@ const G11 = {
     const ll = this.screenToGeo(x, y);
     const near = (cen, px) => { const p = P(cen); return p && d3.geoDistance(cen, this.center()) < Math.PI / 2 && Math.hypot(p[0] - x, p[1] - y) < px; };
     if (it.kind === 'city'){
+      const R = this.scale();
       let best = null, bd = 1e9;
       for (const c of this.cityPool){
+        if (c.shape && c.shape.rad * R > 4) continue;
         if (d3.geoDistance([c.lon, c.lat], this.center()) > Math.PI / 2) continue;
-        const p = P([c.lon, c.lat]); const d = Math.hypot(p[0] - x, p[1] - y);
+        const p = P([c.lon, c.lat]), d = Math.hypot(p[0] - x, p[1] - y);
+        if (d < 14 && d < bd){ bd = d; best = c; }
+      }
+      if (best) return { ok: best === it.c, hit: best };
+      bd = 1e9;
+      if (ll) for (const c of this.cityPool){
+        const sh = c.shape;
+        if (!sh || sh.rad * R <= 4 || d3.geoDistance(sh.cen, ll) > sh.rad + .002) continue;
+        if (d3.geoContains(sh, ll) && (!best || sh.area < best.shape.area)) best = c;
+      }
+      if (best) return { ok: best === it.c, hit: best };
+      for (const c of this.cityPool){
+        if (d3.geoDistance([c.lon, c.lat], this.center()) > Math.PI / 2) continue;
+        const p = P([c.lon, c.lat]);
+        const d = Math.max(0, Math.hypot(p[0] - x, p[1] - y) - (c.shape ? c.shape.rad * R * .8 : 0));
         if (d < bd){ bd = d; best = c; }
       }
-      if (!best || bd > 34) return null;
+      if (!best || bd > 30) return null;
       return { ok: best === it.c, hit: best };
     }
     const tf = it.f;
@@ -4085,7 +4138,7 @@ const G11 = {
       this.misses.push(this.itemName(it));
       this.lastWrong = { it, hit: r.hit };
       this.state = 'reveal';
-      this.flyTo(it.kind === 'city' ? [it.c.lon, it.c.lat] : it.f.cen, it.kind === 'city' ? this.view.k : Math.max(this.view.k, Math.min(this.fitK(it.f, .07), this.view.k * 8)));
+      this.flyTo(it.kind === 'city' ? [it.c.lon, it.c.lat] : it.f.cen, it.kind === 'city' ? (it.c.shape ? Math.max(this.view.k, Math.min(this.fitK(it.c.shape, .12), 160)) : this.view.k) : Math.max(this.view.k, Math.min(this.fitK(it.f, .07), this.view.k * 8)));
       this.showReveal(this.lastWrong);
       this.pulse();
     }
@@ -4127,12 +4180,32 @@ const G11 = {
   /* ---------- modo libre ---------- */
   freeTap(x, y){
     const ll = this.screenToGeo(x, y);
-    if (!ll){ this.sel = null; this.card.hidden = true; this.markDirty(); return; }
+    if (!ll){ this.sel = null; this.focusCity = null; this.card.hidden = true; this.markDirty(); return; }
+    if (this.view.k >= 3 && GEO.urban){
+      const R = this.scale();
+      let city = null;
+      for (const ci of GEO.cities){
+        if (ci.pop < 2e4) break;
+        const sh = ci.shape;
+        if (sh && sh.rad * R > 4 && d3.geoDistance(sh.cen, ll) < sh.rad + .002 && d3.geoContains(sh, ll)){ city = ci; break; }
+      }
+      if (city){ this.sel = null; this.focusCity = city; this.showCityCard(city); this.markDirty(); return; }
+    }
+    this.focusCity = null;
     let hit = null;
     for (const f of GEO.feats){ if (d3.geoDistance(f.cen, ll) > f.rad + .02) continue; if (d3.geoContains(f, ll)){ hit = f; break; } }
     this.sel = hit;
     if (hit){ this.showCard(hit); } else this.card.hidden = true;
     this.markDirty();
+  },
+  showCityCard(ci){
+    const cf = GEO.byId.get(ci.c);
+    this.card.innerHTML = '<div class="gc-head"><b>' + escapeHTML(geoName(ci)) + '</b><button class="icon-btn sm" type="button" data-act="closeCard" aria-label="×">×</button></div>' +
+      '<dl><dt>' + t('country') + '</dt><dd>' + escapeHTML(cf ? geoName(cf.properties) : ci.c) + '</dd>' +
+      (ci.a1 ? '<dt>' + t('divisionOne') + '</dt><dd>' + escapeHTML(ci.a1) + '</dd>' : '') +
+      (ci.pop ? '<dt>' + t('population') + '</dt><dd>' + numMax(ci.pop / 1e6 >= 1 ? ci.pop / 1e6 : ci.pop / 1e3, 1) + (ci.pop >= 1e6 ? ' M' : ' mil') + '</dd>' : '') +
+      (ci.k === 2 ? '<dt>' + t('capital') + '</dt><dd>★ ' + t('capitalCity') + '</dd>' : '') + '</dl>';
+    this.card.hidden = false;
   },
   showCard(f){
     const p = f.properties;
@@ -4159,7 +4232,7 @@ const G11 = {
       b.addEventListener('click', () => {
         box.innerHTML = ''; this.q('#g11search').value = ''; this.q('#g11search').blur();
         if (r.type === 'country'){ this.sel = r.f; this.showCard(r.f); this.flyTo(r.f.cen, this.fitK(r.f, .36)); }
-        else { this.focusCity = r.c; this.sel = null; this.card.hidden = true; this.flyTo([r.c.lon, r.c.lat], Math.max(this.view.k, 9)); setTimeout(() => { if (this.focusCity === r.c){ this.focusCity = null; this.markDirty(); } }, 5000); }
+        else { urbanLoad().then(() => { this.focusCity = r.c; this.sel = null; this.showCityCard(r.c); this.flyTo([r.c.lon, r.c.lat], r.c.shape ? clamp(this.fitK(r.c.shape, .3), 9, 250) : Math.max(this.view.k, 12)); }); }
       });
       box.appendChild(b);
     });
@@ -4172,7 +4245,7 @@ const G11 = {
     const ang = Math.max(f.rad, .004);
     const want = Math.min(this._w || 400, this._h || 400) * frac;
     let k = ang >= Math.PI / 2 ? 1 : want / (this.baseR() * Math.sin(ang));
-    k = clamp(k, 1, 80);
+    k = clamp(k, 1, 250);
     if (keepIfBigger && this.view.k > k && this.view.k < k * 3) k = this.view.k;
     return k;
   },
@@ -4193,7 +4266,7 @@ const G11 = {
     if (o.mode === 'free') c = this.view.k > 1.2 ? this.center() : REGION_VIEW.world, k = animate ? 1 : this.view.k;
     if (animate) this.flyTo(c, k); else { this.view = { lon: c[0], lat: c[1], k }; this.markDirty(); }
   },
-  zoomBy(f){ this.flyTo(this.center(), clamp(this.view.k * f, 1, 80), 260); },
+  zoomBy(f){ this.flyTo(this.center(), clamp(this.view.k * f, 1, 250), 260); },
   flyTo(cen, k, dur){
     dur = dur || 750;
     const from = this.center(), k0 = this.view.k, interp = d3.geoInterpolate(from, cen), t0 = performance.now();
@@ -4253,7 +4326,7 @@ const G11 = {
       pts.set(e.pointerId, p);
       if (pts.size >= 2 && pinch){
         const [a, b] = [...pts.values()];
-        this.view.k = clamp(pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / Math.max(10, pinch.d), 1, 80);
+        this.view.k = clamp(pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / Math.max(10, pinch.d), 1, 250);
         this.markDirty(); return;
       }
       const dx = p.x - prev.x, dy = p.y - prev.y;
@@ -4281,7 +4354,7 @@ const G11 = {
     this.cv.addEventListener('wheel', e => {
       if (!this.loaded) return;
       e.preventDefault();
-      this.view.k = clamp(this.view.k * Math.exp(-e.deltaY * .0016), 1, 80);
+      this.view.k = clamp(this.view.k * Math.exp(-e.deltaY * .0016), 1, 250);
       if (this.state === 'free' && this.view.k >= 2.5 && !GEO.adm1) adm1Load().then(() => this.markDirty());
       this.markDirty();
     }, { passive: false });
@@ -4298,6 +4371,7 @@ const G11 = {
     const vis = f => d3.geoDistance(f.cen, cen) < capA + f.rad + .02;
     c.clearRect(0, 0, w, h);
     if (this.state === 'free' && k >= 2.5 && !GEO.adm1P) adm1Load().then(() => this.markDirty());
+    if (this.state === 'free' && k >= 3 && !GEO.urbanP) urbanLoad().then(() => this.markDirty());
     c.beginPath(); path({ type: 'Sphere' }); c.fillStyle = PAL.sea; c.fill();
     if (k < 6){ c.beginPath(); path(d3.geoGraticule10()); c.strokeStyle = PAL.grat; c.lineWidth = .6; c.stroke(); }
     const land = [PAL.land1, PAL.land2, PAL.land3, PAL.land4, PAL.land5, PAL.land6];
@@ -4353,13 +4427,20 @@ const G11 = {
     /* ciudades en el modo de ciudades */
     if (this.state !== 'free' && this.o.mode === 'inside' && this.o.inType === 'cities' && this.cityPool && this.state !== 'idle'){
       const curC = this.cur() && this.cur().c;
+      const R = this.scale();
       for (const ci of this.cityPool){
         const ll = [ci.lon, ci.lat]; if (!visPt(ll)) continue;
-        const p = P(ll), fl = this.flags.get(ci);
-        c.beginPath(); c.arc(p[0], p[1], fl ? 7 : 5, 0, Math.PI * 2);
-        c.fillStyle = fl === 'ok' ? PAL.hi : fl === 'bad' ? PAL.danger : fl === 'target' ? (pulseOn ? PAL.hi : PAL.hiSoft) : PAL.fg;
-        c.fill(); c.strokeStyle = PAL.surface; c.lineWidth = 1.6; c.stroke();
-        if (fl && fl !== 'ok' || (this.state === 'reveal' && ci === curC)) { /* etiqueta abajo */ }
+        const fl = this.flags.get(ci);
+        const col = fl === 'ok' ? PAL.hi : fl === 'bad' ? PAL.danger : fl === 'target' ? (pulseOn ? PAL.hi : PAL.hiSoft) : PAL.fg;
+        const sh = ci.shape;
+        if (sh && sh.rad * R > 4){
+          c.beginPath(); path(sh); c.globalAlpha = fl ? .95 : .72; c.fillStyle = col; c.fill(); c.globalAlpha = 1;
+          c.strokeStyle = PAL.surface; c.lineWidth = 1.2; c.stroke();
+        } else {
+          const p = P(ll);
+          c.beginPath(); c.arc(p[0], p[1], fl ? 7 : 5, 0, Math.PI * 2);
+          c.fillStyle = col; c.fill(); c.strokeStyle = PAL.surface; c.lineWidth = 1.6; c.stroke();
+        }
       }
       if (this.state === 'reveal' && this.lastWrong){
         const w0 = this.lastWrong;
@@ -4405,17 +4486,31 @@ const G11 = {
       }
       if (k >= 3){
         const minPop = k >= 25 ? 0 : k >= 14 ? 5e4 : k >= 8 ? 2.5e5 : k >= 5 ? 1e6 : 3e6;
+        if (GEO.urban){
+          const shapePop = k >= 20 ? 0 : k >= 10 ? 5e4 : k >= 6 ? 2e5 : 7e5;
+          c.beginPath(); let any = false;
+          for (const ci of GEO.cities){
+            if (ci.pop < shapePop) break;
+            const sh = ci.shape; if (!sh || sh.rad * R < 2.5 || !vis(sh)) continue;
+            path(sh); any = true;
+          }
+          if (any){ c.fillStyle = PAL.fg; c.globalAlpha = .34; c.fill(); c.globalAlpha = .7; c.strokeStyle = PAL.fg; c.lineWidth = 1; c.stroke(); c.globalAlpha = 1; }
+        }
         let n = 0;
         for (const ci of GEO.cities){
           if (ci.pop < minPop) break;
           if (n > 70) break;
           if (ci.k === 2) continue;
-          if (label(geoName(ci), [ci.lon, ci.lat], 11, PAL.fg, 500, false, true)) n++;
+          const big = ci.shape && ci.shape.rad * R > 5;
+          if (label(geoName(ci), [ci.lon, ci.lat], big ? 12 : 11, PAL.fg, big ? 700 : 500, false, !big)) n++;
         }
       }
       if (this.focusCity){
         const fc = this.focusCity, ll = [fc.lon, fc.lat];
-        if (visPt(ll)){ const p = P(ll); c.beginPath(); c.arc(p[0], p[1], 9, 0, Math.PI * 2); c.strokeStyle = PAL.accent; c.lineWidth = 3; c.stroke(); }
+        if (visPt(ll)){
+          if (fc.shape && fc.shape.rad * this.scale() > 4){ c.beginPath(); path(fc.shape); c.fillStyle = PAL.accent; c.globalAlpha = .55; c.fill(); c.globalAlpha = 1; c.strokeStyle = PAL.accent; c.lineWidth = 2.5; c.stroke(); }
+          else { const p = P(ll); c.beginPath(); c.arc(p[0], p[1], 9, 0, Math.PI * 2); c.strokeStyle = PAL.accent; c.lineWidth = 3; c.stroke(); }
+        }
         boxes.length = 0; label(geoName(fc), ll, 14, PAL.accent, 700);
       }
     }
