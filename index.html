@@ -472,6 +472,11 @@ button, input{ font: inherit; color: inherit; }
 .gs-ico svg{ width: 18px; height: 18px; }
 .gs-res{ margin-top: 4px; display: grid; background: var(--surface); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
 .gs-res:empty{ display: none; }
+.geo-layers{ display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.geo-layers button{ border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 10px 5px 8px; font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: var(--shadow); }
+.geo-layers button i{ width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid currentColor; display: inline-block; }
+.geo-layers button[aria-pressed="true"]{ color: var(--accent); border-color: var(--accent); }
+.geo-layers button[aria-pressed="true"] i{ background: currentColor; box-shadow: inset 0 0 0 2px var(--surface); }
 .gs-res button{ border: 0; background: none; text-align: left; padding: 9px 12px; display: flex; justify-content: space-between; gap: 8px; cursor: pointer; font-weight: 600; }
 .gs-res button + button{ border-top: 1px solid var(--line); }
 .gs-res button:hover{ background: var(--accent-soft); }
@@ -755,7 +760,7 @@ const I18N = {
     inNote_adm1: 'Departamentos, estados o provincias, según el país.',
     inNote_region: 'Grupos más grandes que reúnen varias divisiones.',
     inNote_cities: 'Cada ciudad sale con su forma real (su mancha urbana), sin el nombre. Acércate para verla mejor; las muy pequeñas salen como punto.',
-    divisionOne: 'División', population: 'Población',
+    divisionOne: 'División', population: 'Población', lyCountries: 'Países', lyCities: 'Ciudades', lyAdm: 'Estados / deptos.', lySeas: 'Mares',
     lvNote1: 'Se equivoca seguido.', lvNote2: 'Juega bien, pero a veces se descuida.', lvNote3: 'Juega muy bien. Prepárate.', lvNote3x: 'Nunca pierde: lo mejor que puedes lograr es empatar.',
     whichCities: 'Qué ciudades', topN: 'Top {n}',
     loadingMap: 'Cargando el mapa…', loadFail: 'No se pudo cargar el mapa. Revisa la conexión y vuelve a abrir el juego.',
@@ -763,7 +768,7 @@ const I18N = {
     geoHowI: 'Toca en el mapa lo que te pidan. Si fallas, te muestra dónde estaba.',
     noItems: 'No hay nada para buscar con estas opciones.', findIt: 'Encuentra', capitalCity: 'Capital del país',
     itWas: 'Era', youTapped: 'Tocaste {n}', toReview: 'Para repasar:',
-    freeNote: 'Toca un país para ver su capital. Usa el buscador para ir a cualquier país o ciudad.', searchPh: 'Buscar país o ciudad',
+    freeNote: 'Toca un país o una ciudad para ver sus datos. Con los botones de arriba eliges qué nombres se ven.', searchPh: 'Buscar país o ciudad',
     capital: 'Capital', continent: 'Continente', divisions: 'Divisiones', practiceCountry: 'Practicar este país',
     ct_af: 'África', ct_as: 'Asia', ct_eu: 'Europa', ct_na: 'América del Norte', ct_sa: 'América del Sur', ct_oc: 'Oceanía', ct_an: 'Antártida', ct_sv: 'Océano',
     kbdGeo: 'Arrastra para girar · rueda o <kbd>+</kbd> <kbd>−</kbd> para acercar · flechas para mover · <kbd>Esc</kbd> menú',
@@ -937,7 +942,7 @@ const I18N = {
     inNote_adm1: 'States, provinces or departments, depending on the country.',
     inNote_region: 'Larger groups made of several divisions.',
     inNote_cities: 'Each city shows with its real shape (its urban area), without the name. Zoom in to see it better; very small ones show as a dot.',
-    divisionOne: 'Division', population: 'Population',
+    divisionOne: 'Division', population: 'Population', lyCountries: 'Countries', lyCities: 'Cities', lyAdm: 'States', lySeas: 'Seas',
     lvNote1: 'Makes mistakes often.', lvNote2: 'Plays well but slips now and then.', lvNote3: 'Plays very well. Get ready.', lvNote3x: 'Never loses: the best you can get is a draw.',
     whichCities: 'Which cities', topN: 'Top {n}',
     loadingMap: 'Loading the map…', loadFail: 'The map could not load. Check your connection and reopen the game.',
@@ -945,7 +950,7 @@ const I18N = {
     geoHowI: 'Tap what you are asked for. If you miss, it shows you where it was.',
     noItems: 'Nothing to find with these settings.', findIt: 'Find', capitalCity: 'National capital',
     itWas: 'It was', youTapped: 'You tapped {n}', toReview: 'To review:',
-    freeNote: 'Tap a country to see its capital. Use search to jump to any country or city.', searchPh: 'Search country or city',
+    freeNote: 'Tap a country or city to see its details. Use the buttons at the top to choose which names show.', searchPh: 'Search country or city',
     capital: 'Capital', continent: 'Continent', divisions: 'Divisions', practiceCountry: 'Practice this country',
     ct_af: 'Africa', ct_as: 'Asia', ct_eu: 'Europe', ct_na: 'North America', ct_sa: 'South America', ct_oc: 'Oceania', ct_an: 'Antarctica', ct_sv: 'Ocean',
     kbdGeo: 'Drag to spin · wheel or <kbd>+</kbd> <kbd>−</kbd> to zoom · arrows to move · <kbd>Esc</kbd> menu',
@@ -3881,7 +3886,8 @@ const REGION_VIEW = { world: [-45, 12], am: [-75, 5], eu: [15, 50], as: [92, 28]
 const REGION_CT = { world: null, am: ['na', 'sa'], eu: ['eu'], as: ['as'], af: ['af'], oc: ['oc'] };
 const PIN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>';
 
-store.g11 = Object.assign({ mode: 'countries', region: 'world', rounds: 15, country: 'COL', inType: 'adm1', cityCount: 25, inRounds: 15 }, store.g11 || {});
+store.g11 = Object.assign({ layers: { countries: true, cities: true, adm: true, seas: true }, mode: 'countries', region: 'world', rounds: 15, country: 'COL', inType: 'adm1', cityCount: 25, inRounds: 15 }, store.g11 || {});
+if (!store.g11.layers) store.g11.layers = { countries: true, cities: true, adm: true, seas: true };
 const G11 = {
   id: 'g11', hintKey: 'kbdGeo', better: 'high',
   state: 'idle', view: { lon: -45, lat: 12, k: 1 }, raf: 0, dirty: false, anim: null, vel: null,
@@ -3903,7 +3909,7 @@ const G11 = {
       '<div class="geo-prompt" hidden></div>' +
       '<div class="cv-wrap geo"><canvas></canvas>' +
         '<div class="geo-tools"><button class="icon-btn" type="button" data-act="zin" aria-label="+">+</button><button class="icon-btn" type="button" data-act="zout" aria-label="−">−</button><button class="icon-btn" type="button" data-act="home" aria-label="⟲">' + RESTART_SVG + '</button></div>' +
-        '<div class="geo-search" hidden><span class="gs-ico">' + PIN_SVG + '</span><input type="search" id="g11search" autocomplete="off"><div class="gs-res"></div></div>' +
+        '<div class="geo-search" hidden><span class="gs-ico">' + PIN_SVG + '</span><input type="search" id="g11search" autocomplete="off"><div class="gs-res"></div><div class="geo-layers"></div></div>' +
         '<div class="geo-card" hidden></div>' +
         '<div class="geo-reveal" hidden></div>' +
         '<div class="overlay start"></div><div class="overlay result" hidden></div>' +
@@ -3958,6 +3964,17 @@ const G11 = {
     }
     setSummary(this, this.summaryText());
   },
+  renderLayers(){
+    const box = this.q('.geo-layers'), L = this.o.layers;
+    box.innerHTML = '';
+    [['countries', 'lyCountries'], ['cities', 'lyCities'], ['adm', 'lyAdm'], ['seas', 'lySeas']].forEach(([k, lab]) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.setAttribute('aria-pressed', String(L[k] !== false));
+      b.innerHTML = '<i></i>' + t(lab);
+      b.addEventListener('click', () => { L[k] = L[k] === false; save(); this.renderLayers(); if (k === 'cities' && !L.cities){ this.focusCity = null; } this.markDirty(); });
+      box.appendChild(b);
+    });
+  },
   hasRegions(code){
     if (!GEO.adm1) return ['FRA', 'ITA', 'GBR', 'PHL', 'SVN', 'VNM', 'AZE', 'LVA', 'RUS', 'THA', 'UGA', 'ESP', 'CHL', 'PER', 'COL'].includes(code) && false;
     return !!this.regionGroups(code);
@@ -3979,6 +3996,7 @@ const G11 = {
     this.card.hidden = true; this.rev.hidden = true; this.ovR.hidden = true;
     this.prompt.hidden = true;
     this.q('.geo-search').hidden = this.o.mode !== 'free';
+    this.renderLayers();
     this.q('#g11search').placeholder = t('searchPh');
     this.q('.hud').hidden = this.o.mode === 'free';
     this.wrap.classList.toggle('free', this.o.mode === 'free');
@@ -4181,7 +4199,7 @@ const G11 = {
   freeTap(x, y){
     const ll = this.screenToGeo(x, y);
     if (!ll){ this.sel = null; this.focusCity = null; this.card.hidden = true; this.markDirty(); return; }
-    if (this.view.k >= 3 && GEO.urban){
+    if (this.view.k >= 3 && GEO.urban && this.o.layers.cities !== false){
       const R = this.scale();
       let city = null;
       for (const ci of GEO.cities){
@@ -4407,6 +4425,10 @@ const G11 = {
     if (this.sel){ c.beginPath(); path(this.sel); c.strokeStyle = PAL.fg; c.lineWidth = 2; c.stroke(); }
     c.beginPath(); path({ type: 'Sphere' }); c.strokeStyle = PAL.border; c.lineWidth = 1.2; c.stroke();
     const boxes = [];
+    if (this.state === 'free'){
+      const cr = this.cv.getBoundingClientRect();
+      ['.geo-search', '.geo-tools', '.geo-card'].forEach(sel => { const el = this.q(sel); if (!el || el.hidden) return; const r = el.getBoundingClientRect(); boxes.push([r.left - cr.left - 4, r.top - cr.top - 4, r.right - cr.left + 4, r.bottom - cr.top + 4]); });
+    }
     const place = (x, y, wd, ht) => { const b = [x - wd / 2 - 3, y - ht / 2 - 2, x + wd / 2 + 3, y + ht / 2 + 2]; if (b[0] < 2 || b[2] > w - 2 || b[1] < 2 || b[3] > h - 2) return false; for (const o of boxes) if (b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]) return false; boxes.push(b); return true; };
     const visPt = ll => d3.geoDistance(ll, cen) < Math.PI / 2 - .03;
     const ff = this._ff || (this._ff = getComputedStyle(document.body).getPropertyValue('--f-body'));
@@ -4453,7 +4475,8 @@ const G11 = {
     }
     if (this.state === 'done' || this.state === 'reveal'){ /* sin más etiquetas */ }
     if (this.state === 'free'){
-      for (const m of GEO.marine){
+      const LY = this.o.layers || {};
+      if (LY.seas !== false) for (const m of GEO.marine){
         const need = m.cla === 'ocean' ? 0 : m.cla === 'sea' ? 1.5 : 3.5 + m.rank * .4;
         if (k < need) continue;
         const sz = m.cla === 'ocean' ? 14 : 11.5;
@@ -4461,19 +4484,19 @@ const G11 = {
       }
       const R = this.scale();
       const cands = GEO.feats.filter(f => vis(f) && f.properties.ct !== 'sv').map(f => ({ f, s: Math.sqrt(f.area) * R })).sort((a, b) => b.s - a.s);
-      for (const { f, s } of cands){
+      if (LY.countries !== false) for (const { f, s } of cands){
         if (s < 26 && f !== this.sel) continue;
         const sz = clamp(9 + s / 22, 10, 17);
         label(geoName(f.properties), f.cen, sz, PAL.fg, 700);
       }
-      if (k >= 2.2){
+      if (k >= 2.2 && LY.cities !== false){
         for (const f of cands){
           const p = f.f.properties;
           if (!p.ce || (f.s < 40 && f.f !== this.sel)) continue;
           label(S.lang === 'es' ? p.ce : p.cn, [p.cx, p.cy], 11, PAL.fg, 600, false, true, true);
         }
       }
-      if (GEO.adm1 && k >= 4.5){
+      if (GEO.adm1 && k >= 4.5 && LY.adm !== false){
         let n = 0;
         const vc = GEO.feats.filter(f => vis(f) && f.area * R * R > 2500);
         for (const f of vc.flatMap(cf => GEO.adm1.by.get(cf.id) || [])){
@@ -4484,7 +4507,7 @@ const G11 = {
           if (label(geoName(f.properties), f.cen, clamp(8 + s / 40, 9.5, 13), PAL.admText, 600, true)) n++;
         }
       }
-      if (k >= 3){
+      if (k >= 3 && LY.cities !== false){
         const minPop = k >= 25 ? 0 : k >= 14 ? 5e4 : k >= 8 ? 2.5e5 : k >= 5 ? 1e6 : 3e6;
         if (GEO.urban){
           const shapePop = k >= 20 ? 0 : k >= 10 ? 5e4 : k >= 6 ? 2e5 : 7e5;

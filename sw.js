@@ -1,6 +1,6 @@
 // Ratico: guarda todo en el dispositivo para jugar sin internet.
 // Cuando cambies la app, sube el número de VERSION para que los dispositivos descarguen la nueva.
-const VERSION = 'ratico-v3';
+const VERSION = 'ratico-v4';
 const FONTS_CSS = 'https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap';
 const FILES = [
   "./",
